@@ -26,6 +26,11 @@ int main() {
       10 != 9;
       102 >= 1;
       1 <= 21;)";
+
+    code = R"(let x = 5;
+    let y = 10;
+    let foobar = 838383;)";
+
     lexer lex = *new lexer(code);
     vector<token> tokens = lex.parse_input();
     for (token t: tokens) {
