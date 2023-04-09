@@ -5,14 +5,14 @@
 #include <iostream>
 #include "lexer.h"
 
-vector<token> lexer::parse_input() {
-    vector<token> tokens;
+vector<token *> lexer::parse_input() {
+    vector<token *> tokens;
     while (index < inputLen) {
         string cur = scanNext();
-        token tok = *tokenize_string(cur);
+        token *tok = tokenize_string(cur);
         tokens.push_back(tok);
     }
-    tokens.push_back(*newToken("", tokenType::eof));
+    tokens.push_back(newToken("", tokenType::eof));
     return tokens;
 }
 

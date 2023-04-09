@@ -7,26 +7,28 @@
 
 
 #include "../token/token.h"
-#include "../ast/ast.h";
+#include "../ast/ast.h"
 #include <utility>
 #include <vector>
 
 class parser {
 public:
 
-    vector<token> tokens;
+    vector<token *> tokens;
     int index;
     int inputLen;
 
-    explicit parser(vector<token> tokens) {
+    explicit parser(vector<token *> tokens) {
         index = 0;
         inputLen = tokens.size();
-        this->tokens = std::move(tokens);
+        this->tokens = tokens;
     }
 
-    ast parse_input();
+    astNs::ast *parse_input();
 
-    ast parse_let_statement();
+    astNs::astNode *parse_let_statement();
+
+    astNs::expression *parse_expression();
 
 };
 

@@ -22,6 +22,10 @@ string token::to_string() {
     return "Token( " + value + ", " + token::token_type_string(type) + " )\n";
 }
 
+string token::token_literal() {
+    return token_type_string(type);
+}
+
 string token::token_type_string(tokenType t) {
     switch (t) {
         case tokenType::identifier:
