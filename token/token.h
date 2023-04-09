@@ -57,6 +57,8 @@ public:
 
     string to_string();
 
+    string token_literal();
+
     string token_type_string(tokenType t);
 };
 

@@ -21,7 +21,7 @@ public:
         this->inputLen = code.length();
     }
 
-    vector<token> parse_input();
+    vector<token *> parse_input();
 
     token *tokenize_string(const string &value, bool requesting_peek_token = false);
 
