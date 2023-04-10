@@ -102,7 +102,10 @@ string lexer::scanNext(bool peek) {
            (code[curIndex] == '\n' || code[curIndex] == '\t' || code[curIndex] == ' ' || code[curIndex] == '\r'))
         curIndex++;
     string value;
-    if (curIndex == inputLen) return "";
+    if (curIndex == inputLen) {
+        index = inputLen; // we reached the end
+        return "";
+    }
     char cur = code[curIndex];
     if (cur == '+') {
         value += "+";

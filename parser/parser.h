@@ -18,9 +18,9 @@ public:
     int index;
     int inputLen;
 
-    explicit parser(vector<token *> tokens) {
+    explicit parser(const vector<token *> &tokens) {
         index = 0;
-        inputLen = tokens.size();
+        inputLen = (int) tokens.size();
         this->tokens = tokens;
     }
 
@@ -29,6 +29,8 @@ public:
     astNs::astNode *parse_let_statement();
 
     astNs::expression *parse_expression();
+
+    astNs::astNode *parse_return_statement();
 
 };
 

@@ -15,9 +15,11 @@ astNs::ast *parser::parse_input() {
                 program.push_back(node);
                 break;
             }
-            case tokenType::returnToken:
-                // TODO: parse return statement;
+            case tokenType::returnToken: {
+                astNs::astNode *node = parse_return_statement();
+                program.push_back(node);
                 break;
+            }
             case tokenType::eof:
                 index++;
                 break;
@@ -43,6 +45,13 @@ astNs::astNode *parser::parse_let_statement() {
     astNs::expression *expr = parse_expression();
     astNs::statement *statement = new astNs::letStatement(letToken, id, expr);
 
+    return statement;
+}
+
+astNs::astNode *parser::parse_return_statement() {
+    token *returnToken = tokens[index++];
+    astNs::expression *expr = parse_expression();
+    astNs::statement *statement = new astNs::returnStatement(returnToken, expr);
     return statement;
 }
 

@@ -32,7 +32,10 @@ int main() {
 
     code = R"(let x = 5;
     let y = 10;
-    let foobar = 838383;)";
+    let foobar = 838383;
+    return 4;
+    return 9;
+)";
 
     printf("\n --- start tokenizing --- \n\n");
     lexer lex = *new lexer(code);

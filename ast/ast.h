@@ -5,6 +5,7 @@
 #ifndef MONKEYINTERPRETER_AST_H
 #define MONKEYINTERPRETER_AST_H
 
+#include <utility>
 #include <vector>
 #include <string>
 #include "../token/token.h"
@@ -101,12 +102,35 @@ namespace astNs {
         }
     };
 
+    class returnStatement : public statement {
+    public:
+        token *token;
+        expression *returnValue;
+
+        returnStatement(class token *token, expression *returnValue) {
+            this->token = token;
+            this->returnValue = returnValue;
+        }
+
+        string tokenLiteral() override {
+            return token->token_literal();
+        }
+
+        string String() override {
+            return token->to_string();
+        }
+
+        void statmentNode() override {
+
+        }
+    };
+
     class ast {
     public:
         vector<astNode *> program;
 
         ast(vector<astNode *> pr) {
-            this->program = pr;
+            this->program = std::move(pr);
         }
     };
 }
