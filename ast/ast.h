@@ -32,16 +32,16 @@ namespace astNs {
     class identifier : public expression {
     public:
         std::string value;
-        token *token;
+        token *tok;
 
 
         identifier(class token *t, string v) {
-            this->token = t;
+            this->tok = t;
             this->value = std::move(v);
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
@@ -55,16 +55,16 @@ namespace astNs {
 
     class integerLiteral : public expression {
     public:
-        token *token;
+        token *tok;
         int value;
 
         integerLiteral(class token *t, int v) {
-            token = t;
+            tok = t;
             value = v;
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
@@ -80,18 +80,18 @@ namespace astNs {
 
     class letStatement : public statement {
     public:
-        token *token;
+        token *tok;
         identifier *name;
         expression *value;
 
         letStatement(class token *t, identifier *name, expression *value) {
-            this->token = t;
+            this->tok = t;
             this->name = name;
             this->value = value;
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
@@ -104,20 +104,20 @@ namespace astNs {
 
     class returnStatement : public statement {
     public:
-        token *token;
+        token *tok;
         expression *returnValue;
 
-        returnStatement(class token *token, expression *returnValue) {
-            this->token = token;
+        returnStatement(class token *tok, expression *returnValue) {
+            this->tok = tok;
             this->returnValue = returnValue;
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
-            return token->to_string();
+            return tok->to_string();
         }
 
         void statmentNode() override {
