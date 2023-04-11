@@ -3,4 +3,4 @@ project(MonkeyInterpreter)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(MonkeyInterpreter main.cpp lexer/lexer.cpp lexer/lexer.h token/token.cpp token/token.h parser/parser.cpp parser/parser.h ast/ast.h)
+add_executable(MonkeyInterpreter main.cpp lexer/lexer.cpp lexer/lexer.h token/token.cpp token/token.h parser/parser.cpp parser/parser.h ast/ast.h precedence/precedence.h)

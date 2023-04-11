@@ -125,6 +125,28 @@ namespace astNs {
         }
     };
 
+    class expressionStatement : public statement {
+    public:
+        token *tok;
+        expression *expr;
+
+        expressionStatement(class token *tok, expression *expr) {
+            this->tok = tok;
+            this->expr = expr;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return expr->String();
+        }
+
+        void statmentNode() override {
+        }
+    };
+
     class ast {
     public:
         vector<astNode *> program;

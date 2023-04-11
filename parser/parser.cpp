@@ -5,6 +5,14 @@
 #include <stdexcept>
 #include "parser.h"
 
+void parser::register_infix_parsefn(tokenType t, infixParseFn fn) {
+    infixParseFns[t] = fn;
+}
+
+void parser::register_prefix_parsefn(tokenType t, prefixParseFn fn) {
+    prefixParseFns[t] = fn;
+}
+
 astNs::ast *parser::parse_input() {
     vector<astNs::astNode *> program;
     while (index < inputLen) {
@@ -42,7 +50,7 @@ astNs::astNode *parser::parse_let_statement() {
         throw std::runtime_error("expected assign but found something else in let stmt");
     index++; // moving from assign to start of expr
 
-    astNs::expression *expr = parse_expression();
+    astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *statement = new astNs::letStatement(letToken, id, expr);
 
     return statement;
@@ -50,12 +58,22 @@ astNs::astNode *parser::parse_let_statement() {
 
 astNs::astNode *parser::parse_return_statement() {
     token *returnToken = tokens[index++];
-    astNs::expression *expr = parse_expression();
+    astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *statement = new astNs::returnStatement(returnToken, expr);
     return statement;
 }
 
-astNs::expression *parser::parse_expression() {
+astNs::astNode *parser::parse_expression_statement() {
+    token *exprToken = tokens[index++];
+    astNs::expression *expr = parse_expression(precedence::lowest);
+    astNs::statement *stmt = new astNs::expressionStatement(exprToken, expr);
+    if(tokens[index]->type == tokenType::semicolon){
+        index++;
+    }
+    return stmt;
+}
+
+astNs::expression *parser::parse_expression(precedence precedence) {
     astNs::expression *expr;
     astNs::expression *prev;
     while (index < inputLen && tokens[index]->type != tokenType::semicolon) {
