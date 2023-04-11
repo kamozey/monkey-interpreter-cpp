@@ -1,8 +1,0 @@
-# ninja log v5
-562	748	7028488969899250	MonkeyInterpreter.exe	9dde072fb204a1d5
-1	192	1681190153825747410	build.ninja	718f24f3e9439323
-1	408	1681190167534473749	CMakeFiles/MonkeyInterpreter.dir/token/token.cpp.o	be6aaa574feb47c8
-1	503	1681190167630478835	CMakeFiles/MonkeyInterpreter.dir/lexer/lexer.cpp.o	507787ead768e7bb
-0	322	1681190316526369151	CMakeFiles/MonkeyInterpreter.dir/parser/parser.cpp.o	24000aa0f7ddea8f
-0	372	1681190316578371906	CMakeFiles/MonkeyInterpreter.dir/main.cpp.o	4c52f5f98245b029
-373	423	1681190316626374451	MonkeyInterpreter	574d4c1252e85e72

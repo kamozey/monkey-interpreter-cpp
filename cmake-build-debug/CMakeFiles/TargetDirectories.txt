@@ -1,3 +1,0 @@
-/home/rahultumpala/MonkeyInterpreter/cmake-build-debug/CMakeFiles/MonkeyInterpreter.dir
-/home/rahultumpala/MonkeyInterpreter/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/rahultumpala/MonkeyInterpreter/cmake-build-debug/CMakeFiles/rebuild_cache.dir

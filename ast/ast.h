@@ -117,7 +117,7 @@ namespace astNs {
         }
 
         string String() override {
-            return tok->to_string();
+            return tokenLiteral() + " " + returnValue->String() + " ;";
         }
 
         void statmentNode() override {

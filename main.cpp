@@ -34,12 +34,12 @@ int main() {
     let y = 10;
     let foobar = 838383;
     return 4;
-    return 9;
-)";
+    return 9;)";
 
-    printf("\n --- start tokenizing --- \n\n");
+    printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
     vector<token *> tokens = lex.parse_input();
+    printf("\n --- completed tokenizing...printing tokens --- \n\n");
     for (token *t: tokens) {
         cout << t->to_string();
     }
