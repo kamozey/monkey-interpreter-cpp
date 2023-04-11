@@ -67,7 +67,7 @@ astNs::astNode *parser::parse_expression_statement() {
     token *exprToken = tokens[index++];
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *stmt = new astNs::expressionStatement(exprToken, expr);
-    if(tokens[index]->type == tokenType::semicolon){
+    if (tokens[index]->type == tokenType::semicolon) {
         index++;
     }
     return stmt;
@@ -87,4 +87,10 @@ astNs::expression *parser::parse_expression(precedence precedence) {
     }
     if (tokens[index]->type == tokenType::semicolon) index++; // to move ahead of semicolon token
     return expr;
+}
+
+astNs::expression *parser::parse_integer_literal() {
+    token *curToken = tokens[index++];
+    int value = stoi(curToken->value);
+    return new astNs::integerLiteral(curToken, value);
 }

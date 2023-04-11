@@ -13,22 +13,24 @@
 #include <map>
 #include <functional>
 
-typedef astNs::expression* (*prefixParseFn)();
-typedef astNs::expression* (*infixParseFn)(astNs::expression*);
 
 class parser {
 public:
+    typedef astNs::expression *(parser::*prefixParseFn)();
+
+    typedef astNs::expression *(parser::*infixParseFn)(astNs::expression *);
 
     vector<token *> tokens;
     int index;
     int inputLen;
-    map<tokenType,astNs::expression* (*)()> prefixParseFns;
-    map<tokenType, astNs::expression* (*)(astNs::expression*)> infixParseFns;
+    map<tokenType, astNs::expression *(parser::*)()> prefixParseFns;
+    map<tokenType, astNs::expression *(parser::*)(astNs::expression *)> infixParseFns;
 
     explicit parser(const vector<token *> &tokens) {
         index = 0;
         inputLen = (int) tokens.size();
         this->tokens = tokens;
+        register_prefix_parsefn(tokenType::integer, &parser::parse_integer_literal);
     }
 
     astNs::ast *parse_input();
@@ -44,6 +46,8 @@ public:
     void register_prefix_parsefn(tokenType t, prefixParseFn);
 
     void register_infix_parsefn(tokenType t, infixParseFn);
+
+    astNs::expression *parse_integer_literal();
 
 };
 
