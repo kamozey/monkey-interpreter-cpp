@@ -94,3 +94,13 @@ astNs::expression *parser::parse_integer_literal() {
     int value = stoi(curToken->value);
     return new astNs::integerLiteral(curToken, value);
 }
+
+void parser::perform_function_registrations() {
+    register_prefix_parsefn(tokenType::integer, &parser::parse_integer_literal);
+    register_prefix_parsefn(tokenType::identifier, &parser::parse_identifier);
+}
+
+astNs::expression *parser::parse_identifier() {
+    token *curToken = tokens[index++];
+    return new astNs::identifier(curToken, curToken->value);
+}

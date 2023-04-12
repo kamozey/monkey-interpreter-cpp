@@ -147,6 +147,31 @@ namespace astNs {
         }
     };
 
+    class prefixExpression : public expression {
+    public:
+        token *tok;
+        string prefixOperator;
+        expression *right;
+
+        prefixExpression(token *tok, const string &prefixOperator, expression *right) {
+            this->tok = tok;
+            this->prefixOperator = prefixOperator;
+            this->right = right;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "(" + prefixOperator + right->String() + ")";
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
     class ast {
     public:
         vector<astNode *> program;

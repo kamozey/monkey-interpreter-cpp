@@ -30,7 +30,7 @@ public:
         index = 0;
         inputLen = (int) tokens.size();
         this->tokens = tokens;
-        register_prefix_parsefn(tokenType::integer, &parser::parse_integer_literal);
+        perform_function_registrations();
     }
 
     astNs::ast *parse_input();
@@ -41,6 +41,8 @@ public:
 
     astNs::astNode *parse_return_statement();
 
+    void perform_function_registrations();
+
     astNs::astNode *parse_expression_statement();
 
     void register_prefix_parsefn(tokenType t, prefixParseFn);
@@ -48,6 +50,8 @@ public:
     void register_infix_parsefn(tokenType t, infixParseFn);
 
     astNs::expression *parse_integer_literal();
+
+    astNs::expression *parse_identifier();
 
 };
 
