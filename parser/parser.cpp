@@ -74,19 +74,13 @@ astNs::astNode *parser::parse_expression_statement() {
 }
 
 astNs::expression *parser::parse_expression(precedence precedence) {
-    astNs::expression *expr;
-    astNs::expression *prev;
-    while (index < inputLen && tokens[index]->type != tokenType::semicolon) {
-        token *curToken = tokens[index];
-        if (curToken->type == tokenType::integer) {
-            int value = stoi(curToken->value);
-            prev = new astNs::integerLiteral(curToken, value);
-            expr = prev;
-            index++;
-        }
+    token *curToken = tokens[index];
+    if (prefixParseFns.find(curToken->type) == prefixParseFns.end()) {
+        throw std::runtime_error(
+                "no prefix parse function registered for token type " + token::token_type_string(curToken->type));
+        astNs::expression *(parser::*left_expr)() = prefixParseFns[curToken->type];
+        // TODO: figure out how to invoke this pointer
     }
-    if (tokens[index]->type == tokenType::semicolon) index++; // to move ahead of semicolon token
-    return expr;
 }
 
 astNs::expression *parser::parse_integer_literal() {
