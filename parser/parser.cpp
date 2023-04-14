@@ -78,9 +78,9 @@ astNs::expression *parser::parse_expression(precedence precedence) {
     if (prefixParseFns.find(curToken->type) == prefixParseFns.end()) {
         throw std::runtime_error(
                 "no prefix parse function registered for token type " + token::token_type_string(curToken->type));
-        astNs::expression *(parser::*left_expr)() = prefixParseFns[curToken->type];
-        // TODO: figure out how to invoke this pointer
     }
+    astNs::expression *(parser::*left_expr)() = prefixParseFns[curToken->type];
+    return (this->*left_expr)();
 }
 
 astNs::expression *parser::parse_integer_literal() {
