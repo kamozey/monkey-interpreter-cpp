@@ -5,6 +5,7 @@
 #ifndef MONKEYINTERPRETER_AST_H
 #define MONKEYINTERPRETER_AST_H
 
+#include <utility>
 #include <vector>
 #include <string>
 #include "../token/token.h"
@@ -31,16 +32,16 @@ namespace astNs {
     class identifier : public expression {
     public:
         std::string value;
-        token *token;
+        token *tok;
 
 
         identifier(class token *t, string v) {
-            this->token = t;
+            this->tok = t;
             this->value = std::move(v);
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
@@ -54,16 +55,16 @@ namespace astNs {
 
     class integerLiteral : public expression {
     public:
-        token *token;
+        token *tok;
         int value;
 
         integerLiteral(class token *t, int v) {
-            token = t;
+            tok = t;
             value = v;
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
@@ -79,18 +80,18 @@ namespace astNs {
 
     class letStatement : public statement {
     public:
-        token *token;
+        token *tok;
         identifier *name;
         expression *value;
 
         letStatement(class token *t, identifier *name, expression *value) {
-            this->token = t;
+            this->tok = t;
             this->name = name;
             this->value = value;
         }
 
         string tokenLiteral() override {
-            return token->token_literal();
+            return tok->token_literal();
         }
 
         string String() override {
@@ -101,12 +102,108 @@ namespace astNs {
         }
     };
 
+    class returnStatement : public statement {
+    public:
+        token *tok;
+        expression *returnValue;
+
+        returnStatement(class token *tok, expression *returnValue) {
+            this->tok = tok;
+            this->returnValue = returnValue;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return tokenLiteral() + " " + returnValue->String() + " ;";
+        }
+
+        void statmentNode() override {
+
+        }
+    };
+
+    class expressionStatement : public statement {
+    public:
+        token *tok;
+        expression *expr;
+
+        expressionStatement(class token *tok, expression *expr) {
+            this->tok = tok;
+            this->expr = expr;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return expr->String();
+        }
+
+        void statmentNode() override {
+        }
+    };
+
+    class prefixExpression : public expression {
+    public:
+        token *tok;
+        string prefixOperator;
+        expression *right;
+
+        prefixExpression(token *tok, const string &prefixOperator) {
+            this->tok = tok;
+            this->prefixOperator = prefixOperator;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "(" + prefixOperator + right->String() + ")";
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
+    class infixExpression : public expression {
+    public:
+        token *tok;
+        expression *left;
+        expression *right;
+        string infixOperator;
+
+        infixExpression(token *tok, string op, expression *leftExpr) {
+            this->tok = tok;
+            this->infixOperator = op;
+            this->left = leftExpr;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "(" + left->String() + " " + infixOperator + " " + right->String() + ")";
+        }
+
+        void expressionNode() override {
+
+        }
+
+    };
+
     class ast {
     public:
         vector<astNode *> program;
 
         ast(vector<astNode *> pr) {
-            this->program = pr;
+            this->program = std::move(pr);
         }
     };
 }

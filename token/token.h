@@ -59,7 +59,7 @@ public:
 
     string token_literal();
 
-    string token_type_string(tokenType t);
+    static string token_type_string(tokenType t);
 };
 
 

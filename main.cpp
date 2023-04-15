@@ -30,13 +30,16 @@ int main() {
       102 >= 1;
       1 <= 21;)";
 
-    code = R"(let x = 5;
-    let y = 10;
-    let foobar = 838383;)";
+    code = R"(let x = 5 + 5 - 4;
+    let y = 10 + x / 2;
+    let foobar = 838383 + y * 5;
+    return 4 + y;
+    return 9+x;)";
 
-    printf("\n --- start tokenizing --- \n\n");
+    printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
     vector<token *> tokens = lex.parse_input();
+    printf("\n --- completed tokenizing...printing tokens --- \n\n");
     for (token *t: tokens) {
         cout << t->to_string();
     }
