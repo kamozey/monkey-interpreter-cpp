@@ -92,9 +92,18 @@ astNs::expression *parser::parse_integer_literal() {
 void parser::perform_function_registrations() {
     register_prefix_parsefn(tokenType::integer, &parser::parse_integer_literal);
     register_prefix_parsefn(tokenType::identifier, &parser::parse_identifier);
+    register_prefix_parsefn(tokenType::bang, &parser::parse_prefix_expression);
+    register_prefix_parsefn(tokenType::minus, &parser::parse_prefix_expression);
 }
 
 astNs::expression *parser::parse_identifier() {
     token *curToken = tokens[index++];
     return new astNs::identifier(curToken, curToken->value);
+}
+
+astNs::expression *parser::parse_prefix_expression() {
+    token *curToken = tokens[index++];
+    astNs::prefixExpression *expr = new astNs::prefixExpression(curToken, curToken->token_literal());
+    expr->right = parse_expression(precedence::prefix);
+    return expr;
 }

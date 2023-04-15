@@ -153,10 +153,9 @@ namespace astNs {
         string prefixOperator;
         expression *right;
 
-        prefixExpression(token *tok, const string &prefixOperator, expression *right) {
+        prefixExpression(token *tok, const string &prefixOperator) {
             this->tok = tok;
             this->prefixOperator = prefixOperator;
-            this->right = right;
         }
 
         string tokenLiteral() override {

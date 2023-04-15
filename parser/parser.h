@@ -53,6 +53,8 @@ public:
 
     astNs::expression *parse_identifier();
 
+    astNs::expression *parse_prefix_expression();
+
 };
 
 
