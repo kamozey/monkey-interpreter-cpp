@@ -25,12 +25,14 @@ public:
     int inputLen;
     map<tokenType, astNs::expression *(parser::*)()> prefixParseFns;
     map<tokenType, astNs::expression *(parser::*)(astNs::expression *)> infixParseFns;
+    map<tokenType, precedence> precedences;
 
     explicit parser(const vector<token *> &tokens) {
         index = 0;
         inputLen = (int) tokens.size();
         this->tokens = tokens;
         perform_function_registrations();
+        setup_precedences_table();
     }
 
     astNs::ast *parse_input();
@@ -43,11 +45,9 @@ public:
 
     void perform_function_registrations();
 
+    void setup_precedences_table();
+
     astNs::astNode *parse_expression_statement();
-
-    void register_prefix_parsefn(tokenType t, prefixParseFn);
-
-    void register_infix_parsefn(tokenType t, infixParseFn);
 
     astNs::expression *parse_integer_literal();
 
@@ -55,6 +55,9 @@ public:
 
     astNs::expression *parse_prefix_expression();
 
+    precedence get_precedence(tokenType t);
+
+    astNs::expression *parse_infix_expression(astNs::expression *leftExpr);
 };
 
 

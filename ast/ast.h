@@ -171,6 +171,33 @@ namespace astNs {
         }
     };
 
+    class infixExpression : public expression {
+    public:
+        token *tok;
+        expression *left;
+        expression *right;
+        string infixOperator;
+
+        infixExpression(token *tok, string op, expression *leftExpr) {
+            this->tok = tok;
+            this->infixOperator = op;
+            this->left = leftExpr;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "(" + left->String() + " " + infixOperator + " " + right->String() + ")";
+        }
+
+        void expressionNode() override {
+
+        }
+
+    };
+
     class ast {
     public:
         vector<astNode *> program;
