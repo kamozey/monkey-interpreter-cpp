@@ -58,6 +58,8 @@ public:
     precedence get_precedence(tokenType t);
 
     astNs::expression *parse_infix_expression(astNs::expression *leftExpr);
+
+    astNs::expression *parse_grouped_expression();
 };
 
 
