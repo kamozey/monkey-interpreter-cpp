@@ -107,6 +107,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::identifier] = &parser::parse_identifier;
     prefixParseFns[tokenType::bang] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::minus] = &parser::parse_prefix_expression;
+    prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -153,4 +154,13 @@ void parser::setup_precedences_table() {
 precedence parser::get_precedence(tokenType t) {
     if (precedences.find(t) != precedences.end()) return precedences[t];
     return precedence::lowest;
+}
+
+astNs::expression *parser::parse_grouped_expression(){
+    // tokens[index] now points to tokenType::lparen
+    index++;
+    astNs::expression *expr = parse_expression(get_precedence(tokens[index]->type));
+    if(tokens[index]->type != tokenType::rparen) return nullptr;
+    index++;
+    return expr;
 }

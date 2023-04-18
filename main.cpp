@@ -33,7 +33,7 @@ int main() {
     code = R"(let x = 5 + 5 - 4;
     let y = 10 + x / 2;
     let foobar = 838383 + y * 5;
-    return 4 + y;
+    return 4 + (y+1);
     return 9+x;)";
 
     printf("\n --- start tokenizing --- ");
