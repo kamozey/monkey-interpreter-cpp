@@ -198,6 +198,31 @@ namespace astNs {
 
     };
 
+    class ifExpression : public expression {
+    public:
+        token *tok;
+        expression *condition;
+        expression *evalTrue;
+        expression *evalFalse;
+
+        ifExpression(token *tok) {
+            this->tok = tok;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "if (" + condition->String() + ") {\n" + evalTrue->String() + "\n}" +
+                   (evalFalse != nullptr ? "else {\n" + evalFalse->String() + "\n}" : "");
+        }
+
+        void expressionNode() override {
+        }
+
+    };
+
     class ast {
     public:
         vector<astNode *> program;

@@ -37,6 +37,8 @@ enum tokenType {
     lt,
     gt,
     bang,
+    ifToken,
+    elseToken
 };
 
 class token {

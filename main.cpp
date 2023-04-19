@@ -34,7 +34,8 @@ int main() {
     let y = 10 + x / 2;
     let foobar = 838383 + y * 5;
     return 4 + (y+1);
-    return 9+x;)";
+    return 9+x;
+    if(1+1==2){return 1;} else { return 2;})";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
