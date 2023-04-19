@@ -202,8 +202,8 @@ namespace astNs {
     public:
         token *tok;
         expression *condition;
-        expression *evalTrue;
-        expression *evalFalse;
+        statement *evalTrue;
+        statement *evalFalse;
 
         ifExpression(token *tok) {
             this->tok = tok;
@@ -220,7 +220,33 @@ namespace astNs {
 
         void expressionNode() override {
         }
+    };
 
+    class blockStatement : public statement {
+    public:
+        token *tok;
+        vector<statement *> stmts;
+        bool containsReturnStatement;
+
+        blockStatement(token *tok) {
+            this->tok = tok;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s;
+            for (statement *stmt: stmts) {
+                s += stmt->String();
+                s += "\n";
+            }
+            return s;
+        }
+
+        void statmentNode() override {
+        }
     };
 
     class ast {

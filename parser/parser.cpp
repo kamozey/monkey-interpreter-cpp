@@ -7,21 +7,30 @@
 #include<iostream>
 
 astNs::ast *parser::parse_input() {
-    vector<astNs::astNode *> program;
+    vector<astNs::astNode *> program = *parse_statements();
+    astNs::ast *ast = new astNs::ast(program);
+    return ast;
+}
+
+vector<astNs::astNode *> *parser::parse_statements() {
+    vector<astNs::astNode *> stmtNodes;
     while (index < inputLen) {
         token *curToken = tokens[index];
         cout << endl << curToken->to_string() << endl;
         switch (curToken->type) {
             case tokenType::let: {
                 astNs::astNode *node = parse_let_statement();
-                cout << node->String() << endl;
-                program.push_back(node);
+                stmtNodes.push_back(node);
                 break;
             }
             case tokenType::returnToken: {
                 astNs::astNode *node = parse_return_statement();
-//                cout << node->String() << endl;
-                program.push_back(node);
+                stmtNodes.push_back(node);
+                break;
+            }
+            case tokenType::ifToken: {
+                astNs::astNode *node = parse_if_statement();
+                stmtNodes.push_back(node);
                 break;
             }
             case tokenType::eof:
@@ -29,8 +38,7 @@ astNs::ast *parser::parse_input() {
                 break;
         }
     }
-    astNs::ast *ast = new astNs::ast(program);
-    return ast;
+    return &stmtNodes;
 }
 
 astNs::astNode *parser::parse_let_statement() {
@@ -156,11 +164,41 @@ precedence parser::get_precedence(tokenType t) {
     return precedence::lowest;
 }
 
-astNs::expression *parser::parse_grouped_expression(){
+astNs::expression *parser::parse_grouped_expression() {
     // tokens[index] now points to tokenType::lparen
     index++;
     astNs::expression *expr = parse_expression(get_precedence(tokens[index]->type));
-    if(tokens[index]->type != tokenType::rparen) return nullptr;
+    if (tokens[index]->type != tokenType::rparen) return nullptr;
     index++;
     return expr;
+}
+
+astNs::expression *parser::parse_if_expression() {
+    // expressions need to have return values since the return value will be bound to the identifier on the left side of assign
+    // return mandatory
+    return nullptr;
+}
+
+void parser::expectToken(tokenType t) {
+    if (!tokens[index]->type == t)
+        throw std::runtime_error(
+                "expected" + token::token_type_string(t) + " but got " + token::token_type_string(tokens[index]->type));
+}
+
+astNs::astNode *parser::parse_if_statement() {
+    // statements need not have return values => return not mandatory
+    token *curToken = tokens[index];
+    astNs::ifExpression *ifExpression = new astNs::ifExpression(curToken);
+    index++;
+    expectToken(tokenType::lparen);
+    index++;
+    astNs::expression *condition = parse_expression(precedence::lowest);
+    ifExpression->condition = condition;
+    expectToken(tokenType::rparen);
+    index++;
+    expectToken(tokenType::lbrace);
+    index++;
+    vector<astNs::astNode *> *stmts = parse_statements();
+    expectToken(tokenType::rbrace);
+    index++;
 }

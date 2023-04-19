@@ -60,6 +60,14 @@ public:
     astNs::expression *parse_infix_expression(astNs::expression *leftExpr);
 
     astNs::expression *parse_grouped_expression();
+
+    astNs::expression *parse_if_expression();
+
+    void expectToken(tokenType t);
+
+    vector<astNs::astNode *> *parse_statements();
+
+    astNs::astNode *parse_if_statement();
 };
 
 
