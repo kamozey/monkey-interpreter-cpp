@@ -7,27 +7,24 @@
 #include<iostream>
 
 astNs::program *parser::parse_input() {
-    vector<astNs::statement *> *statements;
+    vector<astNs::statement *> statements;
     while (index < inputLen && tokens[index]->type != tokenType::eof) {
         astNs::statement *stmt = parse_statement();
-        statements->push_back(stmt);
+        statements.push_back(stmt);
     }
+    // todo : passing statements as reference here -> may give nullptr exception if vector is empty-> figure out how to handle that
     astNs::program *program = new astNs::program(statements);
     return program;
 }
 
 astNs::statement *parser::parse_statement() {
     token *curToken = tokens[index];
-    cout << endl << curToken->to_string() << endl;
     switch (curToken->type) {
         case tokenType::let: {
             return parse_let_statement();
         }
         case tokenType::returnToken: {
             return parse_return_statement();
-        }
-        case tokenType::ifToken: {
-            return parse_if_statement();
         }
         case tokenType::eof:
             index++;
@@ -109,6 +106,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::bang] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::minus] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
+    prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -160,37 +158,48 @@ precedence parser::get_precedence(tokenType t) {
 astNs::expression *parser::parse_grouped_expression() {
     // tokens[index] now points to tokenType::lparen
     index++;
-    astNs::expression *expr = parse_expression(get_precedence(tokens[index]->type));
-    if (tokens[index]->type != tokenType::rparen) return nullptr;
+    precedence precdnc = get_precedence(tokens[index]->type);
+    astNs::expression *expr = parse_expression(precdnc);
+    expectToken(tokenType::rparen);
     index++;
     return expr;
 }
 
 astNs::expression *parser::parse_if_expression() {
-    // expressions need to have return values since the return value will be bound to the identifier on the left side of assign
-    // return mandatory
-    return nullptr;
-}
-
-void parser::expectToken(tokenType t) {
-    if (!tokens[index]->type == t)
-        throw std::runtime_error(
-                "expected" + token::token_type_string(t) + " but got " + token::token_type_string(tokens[index]->type));
-}
-
-astNs::statement *parser::parse_if_statement() {
-    // statements need not have return values => return not mandatory
-    token *curToken = tokens[index];
-    astNs::ifExpression *ifExpression = new astNs::ifExpression(curToken);
+    // if expression need not have return statement. if there then ok else last line is return value;
+    astNs::ifExpression *ifExpr = new astNs::ifExpression(tokens[index]);
     index++;
     expectToken(tokenType::lparen);
     index++;
-    astNs::expression *condition = parse_expression(precedence::lowest);
-    ifExpression->condition = condition;
+    ifExpr->condition = parse_expression(precedence::lowest);
     expectToken(tokenType::rparen);
     index++;
     expectToken(tokenType::lbrace);
-    index++;
+    ifExpr->evalTrue = parse_block_statement();
+    if (tokens[index]->type == tokenType::elseToken) {
+        index++;
+        expectToken(tokenType::lbrace);
+        ifExpr->evalFalse = parse_block_statement();
+    }
+    return ifExpr;
+}
+
+void parser::expectToken(tokenType t) {
+    if (tokens[index]->type != t)
+        throw std::runtime_error(
+                "expected " + token::token_type_string(t) + " but got " +
+                token::token_type_string(tokens[index]->type));
+}
+
+astNs::blockStatement *parser::parse_block_statement() {
+    token *lbraceToken = tokens[index];
+    index++; // move past lbrace
+    vector<astNs::statement *> stmts;
+    while (index < inputLen && tokens[index]->type != tokenType::rbrace) {
+        stmts.push_back(parse_statement());
+    }
     expectToken(tokenType::rbrace);
     index++;
+    astNs::blockStatement *blockStatement = new astNs::blockStatement(lbraceToken, stmts);
+    return blockStatement;
 }

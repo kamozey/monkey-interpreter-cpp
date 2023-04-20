@@ -203,8 +203,9 @@ namespace astNs {
         token *tok;
         vector<statement *> stmts;
 
-        blockStatement(token *tok) {
+        blockStatement(token *tok, vector<statement *> &stmts) {
             this->tok = tok;
+            this->stmts = stmts;
         }
 
         string tokenLiteral() override {
@@ -240,8 +241,8 @@ namespace astNs {
         }
 
         string String() override {
-            return "if (" + condition->String() + ") {\n" + evalTrue->String() + "\n}" +
-                   (evalFalse != nullptr ? "else {\n" + evalFalse->String() + "\n}" : "");
+            return "if (" + condition->String() + ") {\n\t" + evalTrue->String() + "}" +
+                   (evalFalse != nullptr ? "else {\n\t" + evalFalse->String() + "}" : "");
         }
 
         void expressionNode() override {
@@ -250,9 +251,9 @@ namespace astNs {
 
     class program {
     public:
-        vector<statement *> *statements;
+        vector<statement *> statements;
 
-        program(vector<statement *> *statements) {
+        program(vector<statement *> &statements) {
             this->statements = statements;
         }
     };

@@ -67,8 +67,7 @@ public:
 
     astNs::statement *parse_statement();
 
-    astNs::statement *parse_if_statement();
-
+    astNs::blockStatement *parse_block_statement();
 };
 
 

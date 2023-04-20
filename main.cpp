@@ -35,7 +35,7 @@ int main() {
     let foobar = 838383 + y * 5;
     return 4 + (y+1);
     return 9+x;
-    if(1+1==2){return 1;} else { return 2;})";
+    let z = if(1+1==2){return 1;} else { return 8;})";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
@@ -48,10 +48,11 @@ int main() {
     printf("\n --- completed tokenizing...start parsing --- ");
     parser *prser = new parser(tokens);
     astNs::program *program = prser->parse_input();
+    vector<astNs::statement *> statements = program->statements;
     printf("\n --- completed parsing...printing program --- ");
-    printf("\n --- num nodes : %d \n", program->statements->size());
+    printf("\n --- num nodes : %zu \n", statements.size());
     printf("\n --- start program print: \n\n");
-    for (astNs::statement *stmt: *program->statements) {
+    for (astNs::statement *stmt: statements) {
         cout << stmt->String() << endl;
     }
     printf("\n --- end program print: \n");
