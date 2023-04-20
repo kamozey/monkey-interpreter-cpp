@@ -198,35 +198,10 @@ namespace astNs {
 
     };
 
-    class ifExpression : public expression {
-    public:
-        token *tok;
-        expression *condition;
-        statement *evalTrue;
-        statement *evalFalse;
-
-        ifExpression(token *tok) {
-            this->tok = tok;
-        }
-
-        string tokenLiteral() override {
-            return tok->token_literal();
-        }
-
-        string String() override {
-            return "if (" + condition->String() + ") {\n" + evalTrue->String() + "\n}" +
-                   (evalFalse != nullptr ? "else {\n" + evalFalse->String() + "\n}" : "");
-        }
-
-        void expressionNode() override {
-        }
-    };
-
     class blockStatement : public statement {
     public:
         token *tok;
         vector<statement *> stmts;
-        bool containsReturnStatement;
 
         blockStatement(token *tok) {
             this->tok = tok;
@@ -249,12 +224,46 @@ namespace astNs {
         }
     };
 
+    class ifExpression : public expression {
+    public:
+        token *tok;
+        expression *condition;
+        blockStatement *evalTrue;
+        blockStatement *evalFalse;
+
+        ifExpression(token *tok) {
+            this->tok = tok;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "if (" + condition->String() + ") {\n" + evalTrue->String() + "\n}" +
+                   (evalFalse != nullptr ? "else {\n" + evalFalse->String() + "\n}" : "");
+        }
+
+        void expressionNode() override {
+        }
+    };
+
+    class program {
+    public:
+        vector<statement *> *statements;
+
+        program(vector<statement *> *statements) {
+            this->statements = statements;
+        }
+    };
+
+
     class ast {
     public:
-        vector<astNode *> program;
+        program *program_ptr;
 
-        ast(vector<astNode *> pr) {
-            this->program = std::move(pr);
+        ast(program *program_ptr) {
+            this->program_ptr = program_ptr;
         }
     };
 }

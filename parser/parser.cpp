@@ -6,42 +6,35 @@
 #include "parser.h"
 #include<iostream>
 
-astNs::ast *parser::parse_input() {
-    vector<astNs::astNode *> program = *parse_statements();
-    astNs::ast *ast = new astNs::ast(program);
-    return ast;
-}
-
-vector<astNs::astNode *> *parser::parse_statements() {
-    vector<astNs::astNode *> stmtNodes;
-    while (index < inputLen) {
-        token *curToken = tokens[index];
-        cout << endl << curToken->to_string() << endl;
-        switch (curToken->type) {
-            case tokenType::let: {
-                astNs::astNode *node = parse_let_statement();
-                stmtNodes.push_back(node);
-                break;
-            }
-            case tokenType::returnToken: {
-                astNs::astNode *node = parse_return_statement();
-                stmtNodes.push_back(node);
-                break;
-            }
-            case tokenType::ifToken: {
-                astNs::astNode *node = parse_if_statement();
-                stmtNodes.push_back(node);
-                break;
-            }
-            case tokenType::eof:
-                index++;
-                break;
-        }
+astNs::program *parser::parse_input() {
+    vector<astNs::statement *> *statements;
+    while (index < inputLen && tokens[index]->type != tokenType::eof) {
+        astNs::statement *stmt = parse_statement();
+        statements->push_back(stmt);
     }
-    return &stmtNodes;
+    astNs::program *program = new astNs::program(statements);
+    return program;
 }
 
-astNs::astNode *parser::parse_let_statement() {
+astNs::statement *parser::parse_statement() {
+    token *curToken = tokens[index];
+    cout << endl << curToken->to_string() << endl;
+    switch (curToken->type) {
+        case tokenType::let: {
+            return parse_let_statement();
+        }
+        case tokenType::returnToken: {
+            return parse_return_statement();
+        }
+        case tokenType::ifToken: {
+            return parse_if_statement();
+        }
+        case tokenType::eof:
+            index++;
+    }
+}
+
+astNs::statement *parser::parse_let_statement() {
     if (index + 1 == inputLen) throw std::runtime_error("insufficient tokens to parse let statement");
     token *letToken = tokens[index];
     token *curToken = tokens[++index];
@@ -60,14 +53,14 @@ astNs::astNode *parser::parse_let_statement() {
     return statement;
 }
 
-astNs::astNode *parser::parse_return_statement() {
+astNs::statement *parser::parse_return_statement() {
     token *returnToken = tokens[index++];
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *statement = new astNs::returnStatement(returnToken, expr);
     return statement;
 }
 
-astNs::astNode *parser::parse_expression_statement() {
+astNs::statement *parser::parse_expression_statement() {
     token *exprToken = tokens[index++];
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *stmt = new astNs::expressionStatement(exprToken, expr);
@@ -185,7 +178,7 @@ void parser::expectToken(tokenType t) {
                 "expected" + token::token_type_string(t) + " but got " + token::token_type_string(tokens[index]->type));
 }
 
-astNs::astNode *parser::parse_if_statement() {
+astNs::statement *parser::parse_if_statement() {
     // statements need not have return values => return not mandatory
     token *curToken = tokens[index];
     astNs::ifExpression *ifExpression = new astNs::ifExpression(curToken);
@@ -198,7 +191,6 @@ astNs::astNode *parser::parse_if_statement() {
     index++;
     expectToken(tokenType::lbrace);
     index++;
-    vector<astNs::astNode *> *stmts = parse_statements();
     expectToken(tokenType::rbrace);
     index++;
 }

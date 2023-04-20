@@ -47,12 +47,12 @@ int main() {
 
     printf("\n --- completed tokenizing...start parsing --- ");
     parser *prser = new parser(tokens);
-    astNs::ast *ast = prser->parse_input();
+    astNs::program *program = prser->parse_input();
     printf("\n --- completed parsing...printing program --- ");
-    printf("\n --- num nodes : %d \n", ast->program.size());
+    printf("\n --- num nodes : %d \n", program->statements->size());
     printf("\n --- start program print: \n\n");
-    for (astNs::astNode *node: ast->program) {
-        cout << node->String() << endl;
+    for (astNs::statement *stmt: *program->statements) {
+        cout << stmt->String() << endl;
     }
     printf("\n --- end program print: \n");
 
