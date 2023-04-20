@@ -6,34 +6,32 @@
 #include "parser.h"
 #include<iostream>
 
-astNs::ast *parser::parse_input() {
-    vector<astNs::astNode *> program;
-    while (index < inputLen) {
-        token *curToken = tokens[index];
-        cout << endl << curToken->to_string() << endl;
-        switch (curToken->type) {
-            case tokenType::let: {
-                astNs::astNode *node = parse_let_statement();
-                cout << node->String() << endl;
-                program.push_back(node);
-                break;
-            }
-            case tokenType::returnToken: {
-                astNs::astNode *node = parse_return_statement();
-//                cout << node->String() << endl;
-                program.push_back(node);
-                break;
-            }
-            case tokenType::eof:
-                index++;
-                break;
-        }
+astNs::program *parser::parse_input() {
+    vector<astNs::statement *> statements;
+    while (index < inputLen && tokens[index]->type != tokenType::eof) {
+        astNs::statement *stmt = parse_statement();
+        statements.push_back(stmt);
     }
-    astNs::ast *ast = new astNs::ast(program);
-    return ast;
+    // todo : passing statements as reference here -> may give nullptr exception if vector is empty-> figure out how to handle that
+    astNs::program *program = new astNs::program(statements);
+    return program;
 }
 
-astNs::astNode *parser::parse_let_statement() {
+astNs::statement *parser::parse_statement() {
+    token *curToken = tokens[index];
+    switch (curToken->type) {
+        case tokenType::let: {
+            return parse_let_statement();
+        }
+        case tokenType::returnToken: {
+            return parse_return_statement();
+        }
+        case tokenType::eof:
+            index++;
+    }
+}
+
+astNs::statement *parser::parse_let_statement() {
     if (index + 1 == inputLen) throw std::runtime_error("insufficient tokens to parse let statement");
     token *letToken = tokens[index];
     token *curToken = tokens[++index];
@@ -52,14 +50,14 @@ astNs::astNode *parser::parse_let_statement() {
     return statement;
 }
 
-astNs::astNode *parser::parse_return_statement() {
+astNs::statement *parser::parse_return_statement() {
     token *returnToken = tokens[index++];
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *statement = new astNs::returnStatement(returnToken, expr);
     return statement;
 }
 
-astNs::astNode *parser::parse_expression_statement() {
+astNs::statement *parser::parse_expression_statement() {
     token *exprToken = tokens[index++];
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *stmt = new astNs::expressionStatement(exprToken, expr);
@@ -108,6 +106,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::bang] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::minus] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
+    prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -156,11 +155,51 @@ precedence parser::get_precedence(tokenType t) {
     return precedence::lowest;
 }
 
-astNs::expression *parser::parse_grouped_expression(){
+astNs::expression *parser::parse_grouped_expression() {
     // tokens[index] now points to tokenType::lparen
     index++;
-    astNs::expression *expr = parse_expression(get_precedence(tokens[index]->type));
-    if(tokens[index]->type != tokenType::rparen) return nullptr;
+    precedence precdnc = get_precedence(tokens[index]->type);
+    astNs::expression *expr = parse_expression(precdnc);
+    expectToken(tokenType::rparen);
     index++;
     return expr;
+}
+
+astNs::expression *parser::parse_if_expression() {
+    // if expression need not have return statement. if there then ok else last line is return value;
+    astNs::ifExpression *ifExpr = new astNs::ifExpression(tokens[index]);
+    index++;
+    expectToken(tokenType::lparen);
+    index++;
+    ifExpr->condition = parse_expression(precedence::lowest);
+    expectToken(tokenType::rparen);
+    index++;
+    expectToken(tokenType::lbrace);
+    ifExpr->evalTrue = parse_block_statement();
+    if (tokens[index]->type == tokenType::elseToken) {
+        index++;
+        expectToken(tokenType::lbrace);
+        ifExpr->evalFalse = parse_block_statement();
+    }
+    return ifExpr;
+}
+
+void parser::expectToken(tokenType t) {
+    if (tokens[index]->type != t)
+        throw std::runtime_error(
+                "expected " + token::token_type_string(t) + " but got " +
+                token::token_type_string(tokens[index]->type));
+}
+
+astNs::blockStatement *parser::parse_block_statement() {
+    token *lbraceToken = tokens[index];
+    index++; // move past lbrace
+    vector<astNs::statement *> stmts;
+    while (index < inputLen && tokens[index]->type != tokenType::rbrace) {
+        stmts.push_back(parse_statement());
+    }
+    expectToken(tokenType::rbrace);
+    index++;
+    astNs::blockStatement *blockStatement = new astNs::blockStatement(lbraceToken, stmts);
+    return blockStatement;
 }

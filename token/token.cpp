@@ -7,7 +7,9 @@
 
 map<string, tokenType> token::reserved_keywords = {{"let",    tokenType::let},
                                                    {"fn",     tokenType::fn},
-                                                   {"return", tokenType::returnToken}};
+                                                   {"return", tokenType::returnToken},
+                                                   {"if",     tokenType::ifToken},
+                                                   {"else",   tokenType::elseToken}};
 
 bool token::is_reserved_keyword(std::string value) {
     return reserved_keywords.find(value) != reserved_keywords.end();
@@ -76,5 +78,9 @@ string token::token_type_string(tokenType t) {
             return "gt";
         case tokenType::bang:
             return "bang";
+        case tokenType::ifToken:
+            return "if";
+        case tokenType::elseToken:
+            return "else";
     }
 }

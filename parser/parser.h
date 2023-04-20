@@ -35,19 +35,19 @@ public:
         setup_precedences_table();
     }
 
-    astNs::ast *parse_input();
+    astNs::program *parse_input();
 
-    astNs::astNode *parse_let_statement();
+    astNs::statement *parse_let_statement();
 
     astNs::expression *parse_expression(precedence pre);
 
-    astNs::astNode *parse_return_statement();
+    astNs::statement *parse_return_statement();
 
     void perform_function_registrations();
 
     void setup_precedences_table();
 
-    astNs::astNode *parse_expression_statement();
+    astNs::statement *parse_expression_statement();
 
     astNs::expression *parse_integer_literal();
 
@@ -60,6 +60,14 @@ public:
     astNs::expression *parse_infix_expression(astNs::expression *leftExpr);
 
     astNs::expression *parse_grouped_expression();
+
+    astNs::expression *parse_if_expression();
+
+    void expectToken(tokenType t);
+
+    astNs::statement *parse_statement();
+
+    astNs::blockStatement *parse_block_statement();
 };
 
 

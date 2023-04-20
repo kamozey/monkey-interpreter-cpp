@@ -198,12 +198,73 @@ namespace astNs {
 
     };
 
+    class blockStatement : public statement {
+    public:
+        token *tok;
+        vector<statement *> stmts;
+
+        blockStatement(token *tok, vector<statement *> &stmts) {
+            this->tok = tok;
+            this->stmts = stmts;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s;
+            for (statement *stmt: stmts) {
+                s += stmt->String();
+                s += "\n";
+            }
+            return s;
+        }
+
+        void statmentNode() override {
+        }
+    };
+
+    class ifExpression : public expression {
+    public:
+        token *tok;
+        expression *condition;
+        blockStatement *evalTrue;
+        blockStatement *evalFalse;
+
+        ifExpression(token *tok) {
+            this->tok = tok;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "if (" + condition->String() + ") {\n\t" + evalTrue->String() + "}" +
+                   (evalFalse != nullptr ? "else {\n\t" + evalFalse->String() + "}" : "");
+        }
+
+        void expressionNode() override {
+        }
+    };
+
+    class program {
+    public:
+        vector<statement *> statements;
+
+        program(vector<statement *> &statements) {
+            this->statements = statements;
+        }
+    };
+
+
     class ast {
     public:
-        vector<astNode *> program;
+        program *program_ptr;
 
-        ast(vector<astNode *> pr) {
-            this->program = std::move(pr);
+        ast(program *program_ptr) {
+            this->program_ptr = program_ptr;
         }
     };
 }
