@@ -68,6 +68,12 @@ public:
     astNs::statement *parse_statement();
 
     astNs::blockStatement *parse_block_statement();
+
+    astNs::expression *parse_function_expression();
+
+    vector<astNs::expression *> parse_function_arguments();
+
+    astNs::expression *parse_call_expression(astNs::expression *expr);
 };
 
 

@@ -107,6 +107,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::minus] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
     prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
+    prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -116,6 +117,7 @@ void parser::perform_function_registrations() {
     infixParseFns[tokenType::neq] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lt] = &parser::parse_infix_expression;
     infixParseFns[tokenType::gt] = &parser::parse_infix_expression;
+    infixParseFns[tokenType::lparen] = &parser::parse_call_expression;
 }
 
 astNs::expression *parser::parse_identifier() {
@@ -148,6 +150,7 @@ void parser::setup_precedences_table() {
     precedences[tokenType::minus] = precedence::sum;
     precedences[tokenType::division] = precedence::product;
     precedences[tokenType::asterisk] = precedence::product;
+    precedences[tokenType::lparen] = precedence::call;
 }
 
 precedence parser::get_precedence(tokenType t) {
@@ -202,4 +205,38 @@ astNs::blockStatement *parser::parse_block_statement() {
     index++;
     astNs::blockStatement *blockStatement = new astNs::blockStatement(lbraceToken, stmts);
     return blockStatement;
+}
+
+astNs::expression *parser::parse_function_expression() {
+    token *fnToken = tokens[index];
+    index++;
+    vector<astNs::expression *> vec = parse_function_arguments();
+    astNs::functionLiteral *fnLiteral = new astNs::functionLiteral(fnToken, vec);
+    expectToken(tokenType::lbrace);
+    fnLiteral->body = parse_block_statement();
+    return fnLiteral;
+}
+
+vector<astNs::expression *> parser::parse_function_arguments() {
+    expectToken(tokenType::lparen);
+    index++;
+    vector<astNs::expression *> vec;
+    while (tokens[index]->type != tokenType::rparen) {
+        astNs::expression *expr = parse_expression(precedence::lowest);
+        vec.push_back(expr);
+        if (tokens[index]->type == tokenType::comma) index++;
+    }
+    expectToken(tokenType::rparen);
+    index++;
+    return vec;
+}
+
+astNs::expression *parser::parse_call_expression(astNs::expression *leftExpr) {
+    expectToken(tokenType::lparen);
+    token *curToken = tokens[index];
+    vector<astNs::expression *> vec = parse_function_arguments();
+    astNs::callExpression *callExpr = new astNs::callExpression(curToken, vec);
+    callExpr->name = leftExpr;
+
+    return callExpr;
 }

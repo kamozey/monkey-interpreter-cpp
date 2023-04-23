@@ -249,6 +249,69 @@ namespace astNs {
         }
     };
 
+    class functionLiteral : public expression {
+    public:
+        token *tok;
+        vector<expression *> args;
+        blockStatement *body;
+
+        functionLiteral(token *tok, vector<expression *> &args) {
+            this->tok = tok;
+            this->args = args;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s;
+            s += tok->token_literal() + "(";
+            for (int i = 0; i < args.size(); i++) {
+                s += args[i]->String();
+                s += i != args.size() - 1 ? "," : "";
+            }
+            s += ") {\n\t";
+            s += body->String();
+            s += "}";
+            return s;
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
+    class callExpression : public expression {
+    public:
+        token *tok;
+        expression *name;
+        vector<expression *> args;
+
+        callExpression(token *tok, vector<expression *> args) {
+            this->tok = tok;
+            this->args = args;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s = name->String() + "(";
+            for (int i = 0; i < args.size(); i++) {
+                s += args[i]->String();
+                s += i != args.size() - 1 ? "," : "";
+            }
+            s += ")";
+            return s;
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
     class program {
     public:
         vector<statement *> statements;
