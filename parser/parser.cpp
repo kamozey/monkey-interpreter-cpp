@@ -107,6 +107,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::minus] = &parser::parse_prefix_expression;
     prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
     prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
+    prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -202,4 +203,28 @@ astNs::blockStatement *parser::parse_block_statement() {
     index++;
     astNs::blockStatement *blockStatement = new astNs::blockStatement(lbraceToken, stmts);
     return blockStatement;
+}
+
+astNs::expression *parser::parse_function_expression() {
+    token *fnToken = tokens[index];
+    index++;
+    vector<astNs::expression *> vec = parse_function_arguments();
+    astNs::functionLiteral *fnLiteral = new astNs::functionLiteral(fnToken, vec);
+    expectToken(tokenType::lbrace);
+    fnLiteral->body = parse_block_statement();
+    return fnLiteral;
+}
+
+vector<astNs::expression *> parser::parse_function_arguments() {
+    expectToken(tokenType::lparen);
+    index++;
+    vector<astNs::expression *> vec;
+    while (tokens[index]->type != tokenType::rparen) {
+        astNs::expression *expr = parse_expression(precedence::lowest);
+        vec.push_back(expr);
+        if (tokens[index]->type == tokenType::comma) index++;
+    }
+    expectToken(tokenType::rparen);
+    index++;
+    return vec;
 }
