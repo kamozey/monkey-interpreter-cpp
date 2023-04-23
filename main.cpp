@@ -36,7 +36,8 @@ int main() {
     return 4 + (y+1);
     return 9+x;
     let z = if(1+1==2){return 1;} else { return 8;}
-    let f = fn(x,y,z){return x+y+z;})";
+    let f = fn(x,y,z){return x+y+z;}
+    let value = add(z,f);)";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);

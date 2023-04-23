@@ -117,6 +117,7 @@ void parser::perform_function_registrations() {
     infixParseFns[tokenType::neq] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lt] = &parser::parse_infix_expression;
     infixParseFns[tokenType::gt] = &parser::parse_infix_expression;
+    infixParseFns[tokenType::lparen] = &parser::parse_call_expression;
 }
 
 astNs::expression *parser::parse_identifier() {
@@ -149,6 +150,7 @@ void parser::setup_precedences_table() {
     precedences[tokenType::minus] = precedence::sum;
     precedences[tokenType::division] = precedence::product;
     precedences[tokenType::asterisk] = precedence::product;
+    precedences[tokenType::lparen] = precedence::call;
 }
 
 precedence parser::get_precedence(tokenType t) {
@@ -227,4 +229,14 @@ vector<astNs::expression *> parser::parse_function_arguments() {
     expectToken(tokenType::rparen);
     index++;
     return vec;
+}
+
+astNs::expression *parser::parse_call_expression(astNs::expression *leftExpr) {
+    expectToken(tokenType::lparen);
+    token *curToken = tokens[index];
+    vector<astNs::expression *> vec = parse_function_arguments();
+    astNs::callExpression *callExpr = new astNs::callExpression(curToken, vec);
+    callExpr->name = leftExpr;
+
+    return callExpr;
 }
