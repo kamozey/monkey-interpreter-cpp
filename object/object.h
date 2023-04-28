@@ -8,7 +8,9 @@
 #define MONKEYINTERPRETER_OBJECT_H
 
 enum objectType {
-    integer_obj
+    integer_obj,
+    boolean_obj,
+    null_obj
 };
 
 class object {
@@ -18,7 +20,7 @@ public:
     virtual objectType getType() = 0;
 };
 
-class integer : public object {
+class Integer : public object {
 public:
     int value;
 
@@ -28,6 +30,32 @@ public:
 
     objectType getType() override {
         return integer_obj;
+    }
+
+};
+
+class Boolean : public object {
+public:
+    bool value;
+
+    std::string inspect() override {
+        return value ? "true" : "false";
+    }
+
+    objectType getType() override {
+        return boolean_obj;
+    }
+
+};
+
+class Null : public object {
+public:
+    std::string inspect() override {
+        return "null";
+    }
+
+    objectType getType() override {
+        return null_obj;
     }
 
 };
