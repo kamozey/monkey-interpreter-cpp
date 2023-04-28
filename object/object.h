@@ -24,6 +24,10 @@ class Integer : public object {
 public:
     int value;
 
+    Integer(int value) {
+        this->value = value;
+    }
+
     std::string inspect() override {
         return std::to_string(value);
     }
@@ -37,6 +41,10 @@ public:
 class Boolean : public object {
 public:
     bool value;
+
+    Boolean(bool val) {
+        this->value = val;
+    }
 
     std::string inspect() override {
         return value ? "true" : "false";
