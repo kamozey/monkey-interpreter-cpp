@@ -28,6 +28,8 @@ astNs::statement *parser::parse_statement() {
         }
         case tokenType::eof:
             index++;
+        default:
+            return parse_expression_statement();
     }
 }
 
@@ -58,7 +60,10 @@ astNs::statement *parser::parse_return_statement() {
 }
 
 astNs::statement *parser::parse_expression_statement() {
-    token *exprToken = tokens[index++];
+    token *exprToken = tokens[index];
+    if (token::is_reserved_keyword(exprToken->token_literal())) {
+        index++;
+    }
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *stmt = new astNs::expressionStatement(exprToken, expr);
     if (tokens[index]->type == tokenType::semicolon) {
