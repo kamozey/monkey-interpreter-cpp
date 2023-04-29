@@ -312,12 +312,20 @@ namespace astNs {
         }
     };
 
-    class program {
+    class program : public astNode {
     public:
         vector<statement *> statements;
 
         program(vector<statement *> &statements) {
             this->statements = statements;
+        }
+
+        string tokenLiteral() override {
+            return std::string();
+        }
+
+        string String() override {
+            return std::string();
         }
     };
 
