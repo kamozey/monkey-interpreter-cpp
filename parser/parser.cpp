@@ -113,6 +113,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
     prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
     prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
+    prefixParseFns[tokenType::booleanToken] = &parser::parse_boolean_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -244,4 +245,11 @@ astNs::expression *parser::parse_call_expression(astNs::expression *leftExpr) {
     callExpr->name = leftExpr;
 
     return callExpr;
+}
+
+astNs::expression *parser::parse_boolean_expression(){
+    expectToken(tokenType::booleanToken);
+    token *tok = tokens[index++];
+    astNs::expression *expr = tok->value == "true" ?  new astNs::booleanLiteral(tok, true) : new astNs::booleanLiteral(tok, false);
+    return expr;
 }

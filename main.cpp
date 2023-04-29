@@ -8,7 +8,7 @@ using namespace std;
 #include "./ast/ast.h"
 #include "./parser/parser.h"
 #include "./object/object.h"
-#include "./evaluator/evaluator.h"
+#include "./evaluator/evaluator.cpp"
 
 int main() {
 
@@ -17,7 +17,7 @@ int main() {
     let foobar = 838383 + y * 5;
     return 4 + (y+1);
     return 9+x;
-    let z = if(1+1==2){return 1;} else { return 8;}
+    let z = if(1+1==2){return 1;} else { return true;}
     let f = fn(x,y,z){return x+y+z;}
     let value = add(z,f);)";
 
@@ -45,4 +45,3 @@ int main() {
     cout << obj->inspect() << endl;
     return 0;
 }
-

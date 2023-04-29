@@ -4,12 +4,13 @@
 
 #include "token.h"
 
-
-map<string, tokenType> token::reserved_keywords = {{"let",    tokenType::let},
-                                                   {"fn",     tokenType::fn},
+map<string, tokenType> token::reserved_keywords = {{"let", tokenType::let},
+                                                   {"fn", tokenType::fn},
                                                    {"return", tokenType::returnToken},
-                                                   {"if",     tokenType::ifToken},
-                                                   {"else",   tokenType::elseToken}};
+                                                   {"if", tokenType::ifToken},
+                                                   {"else", tokenType::elseToken},
+                                                   {"true", tokenType::booleanToken},
+                                                   {"false", tokenType::booleanToken}};
 
 bool token::is_reserved_keyword(std::string value) {
     return reserved_keywords.find(value) != reserved_keywords.end();
@@ -82,5 +83,7 @@ string token::token_type_string(tokenType t) {
             return "if";
         case tokenType::elseToken:
             return "else";
+        case tokenType::booleanToken:
+            return "bool";
     }
 }

@@ -74,6 +74,8 @@ public:
     vector<astNs::expression *> parse_function_arguments();
 
     astNs::expression *parse_call_expression(astNs::expression *expr);
+
+    astNs::expression *parse_boolean_expression();
 };
 
 
