@@ -9,8 +9,16 @@
 #define MONKEYINTERPRETER_EVALUATOR_H
 
 
+object *null = new Null();
+object *True = new Boolean(true);
+object *False = new Boolean(false);
+
 object *eval(astNs::astNode *node);
 
 object *evalStatements(vector<astNs::statement *> statements);
+
+object *evalPrefixExpression(std::string prefixOperator, object *right);
+
+object *evalBangOperatorExpression(object *right);
 
 #endif //MONKEYINTERPRETER_EVALUATOR_H

@@ -1,7 +1,7 @@
 output: main.o ast.o lexer.o parser.o precedence.o token.o evaluator.o object.o move
 	g++ -I ./*.cpp -I ./build/*.o -o output
 	rm -rf ./build
-	./output.exe 
+	./output
 
 main.o: main.cpp
 	g++ -c main.cpp
@@ -36,5 +36,6 @@ move:
 clean:
 	find . -name "*.o" -type f -delete
 	find . -name "*.exe" -type f -delete
+	find . -name "output" -delete
 	find . -name "*.h.gch" -type f -delete
 	rm -rf ./build
