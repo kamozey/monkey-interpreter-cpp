@@ -33,7 +33,7 @@ object *eval(astNs::astNode *node)
         return evalPrefixExpression(prefixExpr->prefixOperator, right);
     }
 
-    return nullptr;
+    return null;
 }
 
 object *evalStatements(vector<astNs::statement *> stmts)
@@ -56,7 +56,7 @@ object *evalPrefixExpression(std::string prefixOperator, object *right)
     {
         return evalMinusPrefixOperatorExpression(right);
     }
-    return new Null();
+    return null;
 }
 
 object *evalBangOperatorExpression(object *right)
