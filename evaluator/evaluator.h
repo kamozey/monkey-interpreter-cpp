@@ -19,8 +19,12 @@ object *evalStatements(vector<astNs::statement *> statements);
 
 object *evalPrefixExpression(std::string prefixOperator, object *right);
 
+object *evalInfixExpression(std::string infixOperator, object *left, object *right);
+
 object *evalBangOperatorExpression(object *right);
 
 object *evalMinusPrefixOperatorExpression(object *right);
+
+object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Integer *right);
 
 #endif //MONKEYINTERPRETER_EVALUATOR_H
