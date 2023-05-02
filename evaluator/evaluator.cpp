@@ -52,8 +52,9 @@ object *evalPrefixExpression(std::string prefixOperator, object *right)
     {
         return evalBangOperatorExpression(right);
     }
-    else if (prefixOperator == "-")
+    else if (prefixOperator == "minus")
     {
+        return evalMinusPrefixOperatorExpression(right);
     }
     return new Null();
 }
@@ -64,4 +65,12 @@ object *evalBangOperatorExpression(object *right)
     if(obj != nullptr && obj->value) return False;
     if(obj != nullptr && !obj->value) return True;
     return False;
+}
+
+object *evalMinusPrefixOperatorExpression(object *right)
+{
+    Integer *obj = dynamic_cast<Integer *>(right);
+    if(obj == nullptr) return null;
+    int val = obj->value;
+    return new Integer(-val);
 }

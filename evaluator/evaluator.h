@@ -21,4 +21,6 @@ object *evalPrefixExpression(std::string prefixOperator, object *right);
 
 object *evalBangOperatorExpression(object *right);
 
+object *evalMinusPrefixOperatorExpression(object *right);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H
