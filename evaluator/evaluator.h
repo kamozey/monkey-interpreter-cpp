@@ -27,4 +27,6 @@ object *evalMinusPrefixOperatorExpression(object *right);
 
 object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Integer *right);
 
+object *nativeBoolToBooleanObject(bool val);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H

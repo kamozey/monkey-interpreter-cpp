@@ -93,8 +93,8 @@ object *evalInfixExpression(std::string infixOperator, object *left, object *rig
 {
     if (left->getType() == integer_obj && right->getType() == integer_obj)
     {
-        Integer* l_int = dynamic_cast<Integer*>(left);
-        Integer* r_int = dynamic_cast<Integer*>(right);
+        Integer *l_int = dynamic_cast<Integer *>(left);
+        Integer *r_int = dynamic_cast<Integer *>(right);
         return evalIntegerInfixExpression(infixOperator, l_int, r_int);
     }
 }
@@ -104,7 +104,7 @@ object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Int
     int lval = left->value;
     int rval = right->value;
     if (infixOperator == "plus")
-    {   
+    {
         return new Integer(lval + rval);
     }
     else if (infixOperator == "minus")
@@ -117,9 +117,38 @@ object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Int
     }
     else if (infixOperator == "division")
     {
-        if(rval == 0)
+        if (rval == 0)
             throw std::runtime_error("cannot divide by zero. check expression");
-        return new Integer(lval/rval);
+        return new Integer(lval / rval);
+    }
+    else if (infixOperator == "gte")
+    {
+        return nativeBoolToBooleanObject(lval >= rval);
+    }
+    else if (infixOperator == "lte")
+    {
+        return nativeBoolToBooleanObject(lval <= rval);
+    }
+    else if (infixOperator == "gt")
+    {
+        return nativeBoolToBooleanObject(lval > rval);
+    }
+    else if (infixOperator == "lt")
+    {
+        return nativeBoolToBooleanObject(lval < rval);
+    }
+    else if (infixOperator == "eq")
+    {
+        return nativeBoolToBooleanObject(lval == rval);
+    }
+    else if (infixOperator == "neq")
+    {
+        return nativeBoolToBooleanObject(lval != rval);
     }
     return null;
+}
+
+object *nativeBoolToBooleanObject(bool val){
+    if(val) return True;
+    return False;
 }

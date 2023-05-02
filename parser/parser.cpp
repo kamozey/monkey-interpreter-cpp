@@ -122,7 +122,9 @@ void parser::perform_function_registrations() {
     infixParseFns[tokenType::eq] = &parser::parse_infix_expression;
     infixParseFns[tokenType::neq] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lt] = &parser::parse_infix_expression;
+    infixParseFns[tokenType::lte] = &parser::parse_infix_expression;
     infixParseFns[tokenType::gt] = &parser::parse_infix_expression;
+    infixParseFns[tokenType::gte] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lparen] = &parser::parse_call_expression;
 }
 
@@ -150,6 +152,8 @@ astNs::expression *parser::parse_infix_expression(astNs::expression *leftExpr) {
 void parser::setup_precedences_table() {
     precedences[tokenType::eq] = precedence::equals;
     precedences[tokenType::neq] = precedence::equals;
+    precedences[tokenType::gte] = precedence::equals;
+    precedences[tokenType::lte] = precedence::equals;
     precedences[tokenType::lt] = precedence::lessgreater;
     precedences[tokenType::gt] = precedence::lessgreater;
     precedences[tokenType::plus] = precedence::sum;
