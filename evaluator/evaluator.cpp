@@ -77,6 +77,8 @@ object *evalBangOperatorExpression(object *right)
         return False;
     if (obj != nullptr && !obj->value)
         return True;
+    Null *nullobj = dynamic_cast<Null *>(right); // evals to !null which is true
+    if(nullobj != nullptr) return True;
     return False;
 }
 
