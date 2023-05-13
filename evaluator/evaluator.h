@@ -29,4 +29,6 @@ object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Int
 
 object *nativeBoolToBooleanObject(bool val);
 
+object *evalIfExpression(astNs::ifExpression *ifExpression);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H

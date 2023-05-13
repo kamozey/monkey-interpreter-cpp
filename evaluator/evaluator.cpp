@@ -44,6 +44,16 @@ object *eval(astNs::astNode *node)
         return evalInfixExpression(infixExpr->infixOperator, left, right);
     }
 
+    astNs::ifExpression *ifExpr = dynamic_cast<astNs::ifExpression *>(node);
+    if(ifExpr != nullptr){
+        return evalIfExpression(ifExpr);
+    }
+
+    astNs::blockStatement *blockStmt = dynamic_cast<astNs::blockStatement *>(node);
+    if(blockStmt != nullptr){
+        return evalStatements(blockStmt->stmts);
+    }
+
     return null;
 }
 
@@ -153,4 +163,13 @@ object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Int
 object *nativeBoolToBooleanObject(bool val){
     if(val) return True;
     return False;
+}
+
+object *evalIfExpression(astNs::ifExpression *ifExpr){
+    object *condition = eval(ifExpr->condition);
+    // condition is truthy if it evalautes to any object other than False, null objects
+    if(condition != False && condition != null){
+        return eval(ifExpr->evalTrue);
+    }
+    return eval(ifExpr->evalFalse);
 }
