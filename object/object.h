@@ -10,7 +10,8 @@
 enum objectType {
     integer_obj,
     boolean_obj,
-    null_obj
+    null_obj,
+    return_value_obj
 };
 
 class object {
@@ -66,6 +67,27 @@ public:
         return null_obj;
     }
 
+};
+
+class ReturnValue : public object
+{
+public:
+    object *value;
+
+    ReturnValue(object *val)
+    {
+        this->value = val;
+    }
+
+    std::string inspect() override
+    {
+        return value->inspect();
+    }
+
+    objectType getType() override
+    {
+        return return_value_obj;
+    }
 };
 
 #endif //MONKEYINTERPRETER_OBJECT_H

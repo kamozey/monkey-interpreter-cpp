@@ -11,7 +11,7 @@ object *eval(astNs::astNode *node)
 {
     astNs::program *program = dynamic_cast<astNs::program *>(node);
     if (program != nullptr)
-        return evalStatements(program->statements);
+        return evalProgram(program);
 
     astNs::expressionStatement *exprStmt = dynamic_cast<astNs::expressionStatement *>(node);
     if (exprStmt != nullptr)
@@ -51,20 +51,32 @@ object *eval(astNs::astNode *node)
 
     astNs::blockStatement *blockStmt = dynamic_cast<astNs::blockStatement *>(node);
     if(blockStmt != nullptr){
-        return evalStatements(blockStmt->stmts);
+        return evalBlockStatment(blockStmt);
+    }
+
+    astNs::returnStatement *returnStmt = dynamic_cast<astNs::returnStatement *>(node);
+    if(returnStmt != nullptr){
+        object *value = eval(returnStmt->returnValue);
+        return new ReturnValue(value);
     }
 
     return null;
 }
 
-object *evalStatements(vector<astNs::statement *> stmts)
+object *evalProgram(astNs::program *program)
 {
-    object *obj;
-    for (astNs::statement *stmt : stmts)
+    object *result;
+    for (astNs::statement *stmt : program->statements)
     {
-        obj = eval(stmt);
+        result = eval(stmt);
+
+        // checking to see if we encountered a return statement
+        if(result != nullptr && result ->getType() == objectType::return_value_obj){
+            ReturnValue *returnObject = dynamic_cast<ReturnValue*>(result);
+            return returnObject->value;
+        }
     }
-    return obj;
+    return result;
 }
 
 object *evalPrefixExpression(std::string prefixOperator, object *right)
@@ -172,4 +184,15 @@ object *evalIfExpression(astNs::ifExpression *ifExpr){
         return eval(ifExpr->evalTrue);
     }
     return eval(ifExpr->evalFalse);
+}
+
+object *evalBlockStatment(astNs::blockStatement *blockStatement){
+    object *result;
+    for(astNs::statement *stmt: blockStatement->stmts){
+        result = eval(stmt);
+        if(result != nullptr && result->getType() == objectType::return_value_obj){
+            return result;
+        }
+    }
+    return result;
 }

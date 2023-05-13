@@ -15,7 +15,9 @@ object *False = new Boolean(false);
 
 object *eval(astNs::astNode *node);
 
-object *evalStatements(vector<astNs::statement *> statements);
+object *evalProgram(astNs::program *program);
+
+object *evalBlockStatment(astNs::blockStatement * blockStatement);
 
 object *evalPrefixExpression(std::string prefixOperator, object *right);
 
