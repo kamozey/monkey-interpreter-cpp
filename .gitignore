@@ -4,3 +4,4 @@
 *.o
 .build
 cmake-build-debug
+*.exe
