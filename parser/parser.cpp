@@ -61,9 +61,9 @@ astNs::statement *parser::parse_return_statement() {
 
 astNs::statement *parser::parse_expression_statement() {
     token *exprToken = tokens[index];
-    if (token::is_reserved_keyword(exprToken->token_literal())) {
-        index++;
-    }
+    // if (token::is_reserved_keyword(exprToken->token_literal())) {
+    //     index++;
+    // }
     astNs::expression *expr = parse_expression(precedence::lowest);
     astNs::statement *stmt = new astNs::expressionStatement(exprToken, expr);
     if (tokens[index]->type == tokenType::semicolon) {
@@ -113,6 +113,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::lparen] = &parser::parse_grouped_expression;
     prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
     prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
+    prefixParseFns[tokenType::booleanToken] = &parser::parse_boolean_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -121,7 +122,9 @@ void parser::perform_function_registrations() {
     infixParseFns[tokenType::eq] = &parser::parse_infix_expression;
     infixParseFns[tokenType::neq] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lt] = &parser::parse_infix_expression;
+    infixParseFns[tokenType::lte] = &parser::parse_infix_expression;
     infixParseFns[tokenType::gt] = &parser::parse_infix_expression;
+    infixParseFns[tokenType::gte] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lparen] = &parser::parse_call_expression;
 }
 
@@ -149,6 +152,8 @@ astNs::expression *parser::parse_infix_expression(astNs::expression *leftExpr) {
 void parser::setup_precedences_table() {
     precedences[tokenType::eq] = precedence::equals;
     precedences[tokenType::neq] = precedence::equals;
+    precedences[tokenType::gte] = precedence::equals;
+    precedences[tokenType::lte] = precedence::equals;
     precedences[tokenType::lt] = precedence::lessgreater;
     precedences[tokenType::gt] = precedence::lessgreater;
     precedences[tokenType::plus] = precedence::sum;
@@ -244,4 +249,11 @@ astNs::expression *parser::parse_call_expression(astNs::expression *leftExpr) {
     callExpr->name = leftExpr;
 
     return callExpr;
+}
+
+astNs::expression *parser::parse_boolean_expression(){
+    expectToken(tokenType::booleanToken);
+    token *tok = tokens[index++];
+    astNs::expression *expr = tok->value == "true" ?  new astNs::booleanLiteral(tok, true) : new astNs::booleanLiteral(tok, false);
+    return expr;
 }

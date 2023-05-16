@@ -38,7 +38,8 @@ enum tokenType {
     gt,
     bang,
     ifToken,
-    elseToken
+    elseToken,
+    booleanToken
 };
 
 class token {

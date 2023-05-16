@@ -1,2 +1,7 @@
 .idea
+.vscode
+*.h.gch
+*.o
+.build
 cmake-build-debug
+*.exe
