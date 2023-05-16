@@ -11,7 +11,8 @@ enum objectType {
     integer_obj,
     boolean_obj,
     null_obj,
-    return_value_obj
+    return_value_obj,
+    error_obj
 };
 
 class object {
@@ -19,6 +20,8 @@ public:
     virtual std::string inspect() = 0;
 
     virtual objectType getType() = 0;
+
+    virtual std::string getTypeString() = 0;
 };
 
 class Integer : public object {
@@ -35,6 +38,10 @@ public:
 
     objectType getType() override {
         return integer_obj;
+    }
+
+    std::string getTypeString() override {
+        return "Integer";
     }
 
 };
@@ -55,6 +62,10 @@ public:
         return boolean_obj;
     }
 
+    std::string getTypeString() override {
+        return "Boolean";
+    }
+
 };
 
 class Null : public object {
@@ -65,6 +76,10 @@ public:
 
     objectType getType() override {
         return null_obj;
+    }
+
+    std::string getTypeString() override {
+        return "Null";
     }
 
 };
@@ -87,6 +102,35 @@ public:
     objectType getType() override
     {
         return return_value_obj;
+    }
+
+    std::string getTypeString() override {
+        return "Return";
+    }
+};
+
+class Error : public object
+{
+public:
+    std::string message;
+
+    Error(std::string message)
+    {
+        this->message = message;
+    }
+
+    std::string inspect() override
+    {
+        return message;
+    }
+
+    objectType getType() override
+    {
+        return error_obj;
+    }
+
+    std::string getTypeString() override {
+        return "Error";
     }
 };
 

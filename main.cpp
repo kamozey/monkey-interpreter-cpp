@@ -21,6 +21,7 @@ int main() {
     let f = fn(x,y,z){return x+y+z;}
     let value = add(z,f);)";
     code = "if(1 <= 2) {  if(1==1) { return 1; } return 20 }";
+    code = "4+true";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);

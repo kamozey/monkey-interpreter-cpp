@@ -33,4 +33,8 @@ object *nativeBoolToBooleanObject(bool val);
 
 object *evalIfExpression(astNs::ifExpression *ifExpression);
 
+Error *newError(string format, string args...);
+
+bool isErrorObj(object* obj);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H
