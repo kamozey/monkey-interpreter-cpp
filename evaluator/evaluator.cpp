@@ -72,6 +72,19 @@ object *eval(astNs::astNode *node)
         return new ReturnValue(value);
     }
 
+    astNs::letStatement *letStatement = dynamic_cast<astNs::letStatement *>(node);
+    if(letStatement != nullptr){
+        object *value= eval(letStatement->value);
+        if(isErrorObj(value))
+            return value;
+        globalEnv->set(letStatement->name->value, value);
+    }
+
+    astNs::identifier *identifier = dynamic_cast<astNs::identifier *>(node);
+    if(identifier != nullptr){
+        return evalIdentifier(identifier);
+    }
+
     return null;
 }
 
@@ -231,16 +244,14 @@ object *evalBlockStatment(astNs::blockStatement *blockStatement)
     return result;
 }
 
-Error *newError(string format, string args...)
+Error *newError(string format, ...)
 {
-    cout << format << endl;
     va_list argptr;
-    va_start(argptr, args);
+    va_start(argptr, format);
     char sval[1024*64];
     vsprintf(sval, format.c_str(), argptr);
     va_end(argptr);
     string msg(sval);
-    cout << msg << endl;
     Error *errorObj = new Error(msg);
     return errorObj;
 }
@@ -250,4 +261,12 @@ bool isErrorObj(object *obj)
     if (obj != nullptr)
         return obj->getType() == objectType::error_obj;
     return false;
+}
+
+object *evalIdentifier(astNs::identifier *id){
+   object *value = globalEnv->get(id->value);
+   if(value == nullptr){
+    return newError("identifier not found: " + id->value);
+   }
+   return value;
 }

@@ -4,6 +4,7 @@
 
 #include "../object/object.h"
 #include "../ast/ast.h"
+#include "../object/environment.h"
 
 #ifndef MONKEYINTERPRETER_EVALUATOR_H
 #define MONKEYINTERPRETER_EVALUATOR_H
@@ -12,6 +13,7 @@
 object *null = new Null();
 object *True = new Boolean(true);
 object *False = new Boolean(false);
+Environment *globalEnv = new Environment;
 
 object *eval(astNs::astNode *node);
 
@@ -33,8 +35,10 @@ object *nativeBoolToBooleanObject(bool val);
 
 object *evalIfExpression(astNs::ifExpression *ifExpression);
 
-Error *newError(string format, string args...);
+Error *newError(string format, ...);
 
 bool isErrorObj(object* obj);
+
+object *evalIdentifier(astNs::identifier *id);
 
 #endif //MONKEYINTERPRETER_EVALUATOR_H

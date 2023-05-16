@@ -1,4 +1,4 @@
-output: main.o ast.o lexer.o parser.o precedence.o token.o evaluator.o object.o move
+output: main.o ast.o lexer.o parser.o precedence.o token.o evaluator.o object.o environment.o move 
 	g++ -I ./*.cpp -I ./build/*.o -o output
 	rm -rf ./build
 	./output
@@ -26,6 +26,9 @@ evaluator.o: ./evaluator/*.cpp ./evaluator/*.h
 
 object.o: ./object/object.h
 	g++ -c ./object/object.h
+
+environment.o: ./object/environment.h
+	g++ -c ./object/environment.h
 
 move:
 	mkdir -p ./build
