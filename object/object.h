@@ -2,17 +2,21 @@
 // Created by rahultumpala on 26/4/23.
 //
 
-#include<string>
-
 #ifndef MONKEYINTERPRETER_OBJECT_H
 #define MONKEYINTERPRETER_OBJECT_H
+
+#include<string>
+#include<vector>
+#include<map>
+#include "../ast/ast.h"
 
 enum objectType {
     integer_obj,
     boolean_obj,
     null_obj,
     return_value_obj,
-    error_obj
+    error_obj,
+    function_obj
 };
 
 class object {
@@ -131,6 +135,67 @@ public:
 
     std::string getTypeString() override {
         return "Error";
+    }
+};
+
+class Environment
+{
+public:
+    std::map<std::string, object *> store;
+    Environment *outer;
+
+    Environment() {}
+
+    object* get(std::string name){
+        if(this->store.find(name) != this->store.end()){
+            return (*this).store.at(name);
+        }
+        else if (this->outer != nullptr && this->outer->store.find(name) != this->outer->store.end()){
+            return (*this->outer).store.at(name);
+        }
+        return nullptr;
+    }
+
+    object* set(std::string name, object* val){
+        store[name] = val;
+        return val;
+    }    
+};
+
+Environment *newEnclosedEnv(Environment *outer){
+        Environment *env = new Environment();
+        env->outer = outer;
+        return env;
+    }
+
+
+
+class Function : public object
+{
+public:
+    vector<astNs::expression*> parameters;
+    astNs::blockStatement* body;
+    Environment *env;
+
+    Function() {}
+
+    std::string inspect() override
+    {
+        std::string str = "fn (";
+        for(int i =0 ;i<parameters.size(); i++){
+            astNs::expression *expr = parameters[i];
+            str += expr->String();
+            str +=  i == parameters.size() - 1? "" : ",";
+        }
+    }
+
+    objectType getType() override
+    {
+        return function_obj;
+    }
+
+    std::string getTypeString() override {
+        return "Function";
     }
 };
 

@@ -42,7 +42,8 @@ int main() {
     }
     printf("\n --- end program print: \n");
     printf("\n --- completed printing...start evaluating --- \n");
-    object *obj = eval(program);
+    Environment *env = new Environment();
+    object *obj = eval(program, env);
     cout << obj->inspect() << endl;
     return 0;
 }

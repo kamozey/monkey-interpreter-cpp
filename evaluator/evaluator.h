@@ -4,7 +4,6 @@
 
 #include "../object/object.h"
 #include "../ast/ast.h"
-#include "../object/environment.h"
 
 #ifndef MONKEYINTERPRETER_EVALUATOR_H
 #define MONKEYINTERPRETER_EVALUATOR_H
@@ -13,13 +12,12 @@
 object *null = new Null();
 object *True = new Boolean(true);
 object *False = new Boolean(false);
-Environment *globalEnv = new Environment;
 
-object *eval(astNs::astNode *node);
+object *eval(astNs::astNode *node, Environment *env);
 
-object *evalProgram(astNs::program *program);
+object *evalProgram(astNs::program *program, Environment *env);
 
-object *evalBlockStatment(astNs::blockStatement * blockStatement);
+object *evalBlockStatment(astNs::blockStatement * blockStatement, Environment *env);
 
 object *evalPrefixExpression(std::string prefixOperator, object *right);
 
@@ -33,12 +31,20 @@ object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Int
 
 object *nativeBoolToBooleanObject(bool val);
 
-object *evalIfExpression(astNs::ifExpression *ifExpression);
+object *evalIfExpression(astNs::ifExpression *ifExpression, Environment *env);
+
+vector<object*> evalExpressions(vector<astNs::expression*> args, Environment *env);
+
+object *applyFunction(object *function, vector<object*> args);
 
 Error *newError(string format, ...);
 
 bool isErrorObj(object* obj);
 
-object *evalIdentifier(astNs::identifier *id);
+object *evalIdentifier(astNs::identifier *id, Environment *env);
+
+Environment *extendFunctionEnv( Function *fn, vector<object*> args);
+
+object *unwrapReturnValue(object* obj);
 
 #endif //MONKEYINTERPRETER_EVALUATOR_H
