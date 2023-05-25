@@ -93,6 +93,7 @@ object *eval(astNs::astNode *node, Environment* env)
         Function *func = new Function();
         func->body = f_literal->body;
         func->parameters = f_literal->args;
+        func->env = env;
         return func;
     }
 
