@@ -12,7 +12,17 @@ using namespace std;
 
 int main() {
 
-    string code = R"(let x = 5 + 5 - 4;
+    string code = R"(let counter = fn(x) {
+            if (x > 100000) {
+            return true;
+            } else {
+                let foobar = 9999; 
+                counter(x + 1);
+                }
+            };
+            counter(0);)"; // this code eats up memory, an example to verify if GC works 
+    // TODO: write a GC
+    code = R"(let x = 5 + 5 - 4;
     let y = 10 + x / 2;
     let foobar = 838383 + y * 5;
     return 4 + (y+1);
