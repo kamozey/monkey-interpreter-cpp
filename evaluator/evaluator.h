@@ -49,4 +49,6 @@ Environment *extendFunctionEnv( Function *fn, vector<object*> args);
 
 object *unwrapReturnValue(object* obj);
 
+object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment *env);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H

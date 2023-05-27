@@ -118,6 +118,11 @@ object *eval(astNs::astNode *node, Environment* env)
         return new String(stringLiteral->value);
     }
 
+    astNs::arrayExpression *arrayExpr = dynamic_cast<astNs::arrayExpression *>(node);
+    if(arrayExpr != nullptr){
+        return evaluateArrayExpressions(arrayExpr, env);
+    }
+
     return null;
 }
 
@@ -354,4 +359,13 @@ object *unwrapReturnValue(object* obj){
         return returnObj->value;
     }
     return obj;
+}
+
+object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment *env){
+    vector<object*> items;
+    for(astNs::expression *expr : arrayExpr->items){
+        object *obj = eval(expr, env);
+        items.push_back(obj);
+    }
+    return new Array(items);
 }

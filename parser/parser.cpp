@@ -274,7 +274,6 @@ astNs::expression *parser::parse_array_expression(){
     vector<astNs::expression *> items;
     while(index < tokens.size() ){
         token *tok = tokens[index];
-        cout << tok->token_literal() << endl;
         if(tok->type == tokenType::eof || tok->type == tokenType::rbracket){
             index++; // step over eof || rbracket
             break;

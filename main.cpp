@@ -32,7 +32,7 @@ int main() {
     let value = add(z,f);)";
     code = "let f = fn(x) { fn(y) { x+y }; }; let m = f(999); m(1)";
     code = R"(let x = "hello"; return x + " " + x; )";
-    code = R"(let array = ["hello", 1, fn(x){ return x;}]; )";
+    code = R"(let array = ["hello", 1, fn(x){ return x;}]; array; )";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);

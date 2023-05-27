@@ -18,7 +18,8 @@ enum objectType
     return_value_obj,
     error_obj,
     function_obj,
-    string_obj
+    string_obj,
+    array_obj
 };
 
 class object
@@ -154,6 +155,39 @@ public:
     }
 };
 
+class Array : public object
+{
+public:
+    std::vector<object*> items;
+
+    Array(std::vector<object*> &items)
+    {
+        this->items = items;
+    }
+
+    std::string inspect() override
+    {
+        std::string val = "[ ";
+        int len = items.size();
+        for(int i =0; i<len; ++i){
+            val += items[i]->inspect();
+            val += i == items.size() - 1 ? "" : " , ";
+        }
+        val += " ]";
+        return val;
+    }
+
+    objectType getType() override
+    {
+        return array_obj;
+    }
+
+    std::string getTypeString() override
+    {
+        return "Array";
+    }
+};
+
 class Error : public object
 {
 public:
@@ -233,6 +267,10 @@ public:
             str += expr->String();
             str += i == parameters.size() - 1 ? "" : ",";
         }
+        str += "){\n\t";
+        str += body->String();
+        str += "}";
+        return str;
     }
 
     objectType getType() override
