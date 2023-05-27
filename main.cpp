@@ -20,8 +20,7 @@ int main() {
     let z = if(1+1==2){return 1;} else { return true;}
     let f = fn(x,y,z){return x+y+z;}
     let value = add(z,f);)";
-    code = "if(1 <= 2) {  if(1==1) { return 1; } return 20 }";
-    code = "4+true";
+    code = "let f = fn(x) { fn(y) { x+y }; }; let m = f(999); m(1)";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
@@ -43,7 +42,8 @@ int main() {
     }
     printf("\n --- end program print: \n");
     printf("\n --- completed printing...start evaluating --- \n");
-    object *obj = eval(program);
+    Environment *env = new Environment();
+    object *obj = eval(program, env);
     cout << obj->inspect() << endl;
     return 0;
 }
