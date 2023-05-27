@@ -113,6 +113,11 @@ object *eval(astNs::astNode *node, Environment* env)
         return applyFunction(function, args);
     }
 
+    astNs::stringLiteral *stringLiteral = dynamic_cast<astNs::stringLiteral *>(node);
+    if(stringLiteral != nullptr){
+        return new String(stringLiteral->value);
+    }
+
     return null;
 }
 
@@ -186,6 +191,11 @@ object *evalInfixExpression(std::string infixOperator, object *left, object *rig
         Integer *r_int = dynamic_cast<Integer *>(right);
         return evalIntegerInfixExpression(infixOperator, l_int, r_int);
     }
+    if(left->getType() == string_obj && right->getType() == string_obj){
+        String *l_str = dynamic_cast<String *>(left);
+        String *r_str = dynamic_cast<String *>(right);
+        return evalStringInfixExpression(infixOperator, l_str, r_str);
+    }
     return newError("unknown operator: %s %s %s", left->getTypeString(), infixOperator, right->getTypeString());
 }
 
@@ -236,6 +246,13 @@ object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Int
         return nativeBoolToBooleanObject(lval != rval);
     }
     return newError("unknown operator: %s %s %s", left->getTypeString(), infixOperator, right->getTypeString());
+}
+
+object *evalStringInfixExpression(std::string infixOperator, String *left, String *right){
+    if(infixOperator == "plus"){
+        return new String(left->value + right->value);
+    }
+    return newError("unsupported operator: %s %s %s", left->getTypeString(), infixOperator, right->getTypeString());
 }
 
 object *nativeBoolToBooleanObject(bool val)
@@ -325,7 +342,7 @@ object *applyFunction(object *function, vector<object*> args){
 
 Environment *extendFunctionEnv( Function *fn, vector<object*> args){
     Environment *env = newEnclosedEnv(fn->env);
-    for(int i=0; i< args.size() ; i++){        
+    for(int i=0; i< args.size() ; i++){
         env->set(fn->parameters[i]->String(), args[i]);
     }
     return env;

@@ -114,6 +114,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::ifToken] = &parser::parse_if_expression;
     prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
     prefixParseFns[tokenType::booleanToken] = &parser::parse_boolean_expression;
+    prefixParseFns[tokenType::stringToken] = &parser::parse_string_literal;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -255,5 +256,12 @@ astNs::expression *parser::parse_boolean_expression(){
     expectToken(tokenType::booleanToken);
     token *tok = tokens[index++];
     astNs::expression *expr = tok->value == "true" ?  new astNs::booleanLiteral(tok, true) : new astNs::booleanLiteral(tok, false);
+    return expr;
+}
+
+astNs::expression *parser::parse_string_literal(){
+    expectToken(tokenType::stringToken);
+    token *tok = tokens[index++];
+    astNs::expression *expr = new astNs::stringLiteral(tok, tok->value);
     return expr;
 }

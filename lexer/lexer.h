@@ -29,6 +29,8 @@ public:
 
     string scanNext(bool peek = false);
 
+    string readString(bool peek = false);
+
     bool is_number(string value);
 };
 
