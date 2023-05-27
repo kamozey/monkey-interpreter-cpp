@@ -40,7 +40,9 @@ enum tokenType {
     ifToken,
     elseToken,
     booleanToken,
-    stringToken
+    stringToken,
+    lbracket,
+    rbracket
 };
 
 class token {

@@ -87,5 +87,9 @@ string token::token_type_string(tokenType t) {
             return "bool";
         case tokenType::stringToken:
             return "string";
+        case tokenType::lbracket:
+            return "lbracket";
+        case tokenType::rbracket:
+            return "rbracket";
     }
 }
