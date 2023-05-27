@@ -12,11 +12,16 @@ vector<token *> lexer::parse_input() {
         token *tok = tokenize_string(cur);
         tokens.push_back(tok);
     }
-    tokens.push_back(newToken("", tokenType::eof));
+    if(tokens.size() > 0 && tokens[tokens.size() -1]->type != tokenType::eof){
+        tokens.push_back(newToken("", tokenType::eof));
+    }
     return tokens;
 }
 
 token *lexer::tokenize_string(const std::string &cur, bool requesting_peek_token) {
+    if(cur == ""){
+        return newToken("", tokenType::eof);
+    }
     if (cur == "+") {
         return newToken("+", tokenType::plus);
     } else if (cur == "-") {
@@ -38,6 +43,8 @@ token *lexer::tokenize_string(const std::string &cur, bool requesting_peek_token
     } else if (cur == "/") {
         return newToken("/", tokenType::division);
     } else if (cur == ">") {
+        // requesting_peek_token is used when there are 2 character tokens
+        // such as <=, >=, ==, !=
         if (!requesting_peek_token) {
             string peek = scanNext(1);
             token peek_token = *tokenize_string(peek, 1);
@@ -85,7 +92,11 @@ token *lexer::tokenize_string(const std::string &cur, bool requesting_peek_token
         return newToken(cur, tokenType::integer);
     } else if (token::is_reserved_keyword(cur)) {
         return token::get_keyword_token(cur);
+    } else if(cur == "\""){
+        string value  = readString(requesting_peek_token);
+        return newToken(value, tokenType::stringToken);
     }
+
     // TODO: instead of returning :identifier as default, think how to handle :illegal token case
     return newToken(cur, tokenType::identifier);
 }
@@ -97,10 +108,10 @@ bool lexer::is_number(string value) {
 }
 
 string lexer::scanNext(bool peek) {
+    while (index < inputLen &&
+           (code[index] == '\n' || code[index] == '\t' || code[index] == ' ' || code[index] == '\r'))
+        index++;
     int curIndex = index;
-    while (curIndex < inputLen &&
-           (code[curIndex] == '\n' || code[curIndex] == '\t' || code[curIndex] == ' ' || code[curIndex] == '\r'))
-        curIndex++;
     string value;
     if (curIndex == inputLen) {
         index = inputLen; // we reached the end
@@ -155,6 +166,9 @@ string lexer::scanNext(bool peek) {
     } else if (cur >= 'a' && cur <= 'z') {
         while (code[curIndex] >= 'a' && code[curIndex] <= 'z')
             value += code[curIndex++];
+    } else if(cur == '"'){
+        value += cur;
+        // index = curIndex; // not incrementing index here because readString() will handle it
     }
     if (!peek) index = curIndex;
     return value;
@@ -163,4 +177,18 @@ string lexer::scanNext(bool peek) {
 
 token *lexer::newToken(std::string value, tokenType type) {
     return new token(value, type);
+}
+
+string lexer::readString(bool peek){
+    int curIndex = index;
+    while (curIndex < inputLen &&
+           (code[curIndex] == '\n' || code[curIndex] == '\t' || code[curIndex] == ' ' || code[curIndex] == '\r'))
+        curIndex++;
+    string value;
+    curIndex++; // to step over opening double quotes
+    while(code[curIndex] != '"')
+        value += code[curIndex++];
+    curIndex++; // to step over closing double quotes
+    if(!peek) index = curIndex;
+    return value;
 }

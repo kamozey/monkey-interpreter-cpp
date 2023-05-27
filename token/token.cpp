@@ -85,5 +85,7 @@ string token::token_type_string(tokenType t) {
             return "else";
         case tokenType::booleanToken:
             return "bool";
+        case tokenType::stringToken:
+            return "string";
     }
 }
