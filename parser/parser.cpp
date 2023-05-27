@@ -115,6 +115,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
     prefixParseFns[tokenType::booleanToken] = &parser::parse_boolean_expression;
     prefixParseFns[tokenType::stringToken] = &parser::parse_string_literal;
+    prefixParseFns[tokenType::lbracket] = &parser::parse_array_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -264,4 +265,27 @@ astNs::expression *parser::parse_string_literal(){
     token *tok = tokens[index++];
     astNs::expression *expr = new astNs::stringLiteral(tok, tok->value);
     return expr;
+}
+
+astNs::expression *parser::parse_array_expression(){
+    expectToken(tokenType::lbracket);
+    astNs::arrayExpression *arrayExpr = new astNs::arrayExpression(tokens[index]);
+    index++; // step over lbracket
+    vector<astNs::expression *> items;
+    while(index < tokens.size() ){
+        token *tok = tokens[index];
+        cout << tok->token_literal() << endl;
+        if(tok->type == tokenType::eof || tok->type == tokenType::rbracket){
+            index++; // step over eof || rbracket
+            break;
+        }
+        if(tok->type == tokenType::comma){
+            index++; // step over comma
+            continue;
+        }
+        astNs::expression *expr = parse_expression(precedence::lowest);
+        items.push_back(expr);
+    }
+    arrayExpr->items = items;
+    return arrayExpr;
 }

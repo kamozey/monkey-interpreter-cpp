@@ -78,6 +78,8 @@ public:
     astNs::expression *parse_call_expression(astNs::expression *expr);
 
     astNs::expression *parse_boolean_expression();
+
+    astNs::expression *parse_array_expression();
 };
 
 #endif // MONKEYINTERPRETER_PARSER_H

@@ -298,6 +298,36 @@ namespace astNs {
         }
     };
 
+    class arrayExpression : public expression {
+    public:
+        token *tok;
+        vector<expression *> items;
+
+        arrayExpression(token *tok) {
+            this->tok = tok;
+            this->items = items;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s;
+            s += "[";
+            for (int i = 0; i < items.size(); i++) {
+                s += items[i]->String();
+                s += i != items.size() - 1 ? "," : "";
+            }
+            s += "]";
+            return s;
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
     class functionLiteral : public expression {
     public:
         token *tok;
