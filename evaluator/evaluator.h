@@ -29,6 +29,8 @@ object *evalMinusPrefixOperatorExpression(object *right);
 
 object *evalIntegerInfixExpression(std::string infixOperator, Integer *left, Integer *right);
 
+object *evalStringInfixExpression(std::string infixOperator, String *left, String *right);
+
 object *nativeBoolToBooleanObject(bool val);
 
 object *evalIfExpression(astNs::ifExpression *ifExpression, Environment *env);

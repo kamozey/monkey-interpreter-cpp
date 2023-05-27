@@ -21,7 +21,7 @@ int main() {
     let f = fn(x,y,z){return x+y+z;}
     let value = add(z,f);)";
     code = "let f = fn(x) { fn(y) { x+y }; }; let m = f(999); m(1)";
-    code = R"(let x = "some string"; x; )";
+    code = R"(let x = "hello"; return x + " " + x; )";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
