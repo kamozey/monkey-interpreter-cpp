@@ -1,4 +1,4 @@
-output: main.o ast.o lexer.o parser.o precedence.o token.o evaluator.o object.o move 
+output: main.o ast.o lexer.o parser.o precedence.o token.o  object.o evaluator.o move
 	g++ -I ./*.cpp -I ./build/*.o -o output
 	rm -rf ./build
 	./output

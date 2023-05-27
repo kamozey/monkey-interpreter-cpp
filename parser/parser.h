@@ -5,7 +5,6 @@
 #ifndef MONKEYINTERPRETER_PARSER_H
 #define MONKEYINTERPRETER_PARSER_H
 
-
 #include "../token/token.h"
 #include "../ast/ast.h"
 #include "../precedence/precedence.h"
@@ -13,8 +12,8 @@
 #include <map>
 #include <functional>
 
-
-class parser {
+class parser
+{
 public:
     typedef astNs::expression *(parser::*prefixParseFn)();
 
@@ -27,9 +26,10 @@ public:
     map<tokenType, astNs::expression *(parser::*)(astNs::expression *)> infixParseFns;
     map<tokenType, precedence> precedences;
 
-    explicit parser(const vector<token *> &tokens) {
+    explicit parser(const vector<token *> &tokens)
+    {
         index = 0;
-        inputLen = (int) tokens.size();
+        inputLen = (int)tokens.size();
         this->tokens = tokens;
         perform_function_registrations();
         setup_precedences_table();
@@ -50,6 +50,8 @@ public:
     astNs::statement *parse_expression_statement();
 
     astNs::expression *parse_integer_literal();
+
+    astNs::expression *parse_string_literal();
 
     astNs::expression *parse_identifier();
 
@@ -78,5 +80,4 @@ public:
     astNs::expression *parse_boolean_expression();
 };
 
-
-#endif //MONKEYINTERPRETER_PARSER_H
+#endif // MONKEYINTERPRETER_PARSER_H

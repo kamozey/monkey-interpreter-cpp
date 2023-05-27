@@ -77,6 +77,33 @@ namespace astNs {
 
     };
 
+    class stringLiteral : public expression
+    {
+    public:
+        token *tok;
+        string value;
+
+        stringLiteral(class token *t, string v)
+        {
+            tok = t;
+            value = v;
+        }
+
+        string tokenLiteral() override
+        {
+            return tok->token_literal();
+        }
+
+        string String() override
+        {
+            return  "\"" + value + "\"";
+        }
+
+        void expressionNode() override
+        {
+        }
+    };
+
     class booleanLiteral : public expression
     {
     public:
