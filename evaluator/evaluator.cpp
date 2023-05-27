@@ -113,6 +113,11 @@ object *eval(astNs::astNode *node, Environment* env)
         return applyFunction(function, args);
     }
 
+    astNs::stringLiteral *stringLiteral = dynamic_cast<astNs::stringLiteral *>(node);
+    if(stringLiteral != nullptr){
+        return new String(stringLiteral->value);
+    }
+
     return null;
 }
 
@@ -325,7 +330,7 @@ object *applyFunction(object *function, vector<object*> args){
 
 Environment *extendFunctionEnv( Function *fn, vector<object*> args){
     Environment *env = newEnclosedEnv(fn->env);
-    for(int i=0; i< args.size() ; i++){        
+    for(int i=0; i< args.size() ; i++){
         env->set(fn->parameters[i]->String(), args[i]);
     }
     return env;
