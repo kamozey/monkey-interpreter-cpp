@@ -22,6 +22,7 @@ public:
     vector<token *> tokens;
     int index;
     int inputLen;
+    astNs::expression *prevExpr;
     map<tokenType, astNs::expression *(parser::*)()> prefixParseFns;
     map<tokenType, astNs::expression *(parser::*)(astNs::expression *)> infixParseFns;
     map<tokenType, precedence> precedences;
@@ -80,6 +81,8 @@ public:
     astNs::expression *parse_boolean_expression();
 
     astNs::expression *parse_array_expression();
+
+    bool validArrayAccessTok(token *tok);
 };
 
 #endif // MONKEYINTERPRETER_PARSER_H

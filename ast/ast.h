@@ -328,6 +328,29 @@ namespace astNs {
         }
     };
 
+    class arrayAccessExpr: public expression {
+    public:
+        token *tok;
+        expression *itemIndex; // any expression that evaluates to Integer
+        expression *arrayExpr; // any expression that evaluates to Array
+
+        arrayAccessExpr(expression *arrayExpr) {
+            this->arrayExpr = arrayExpr;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return "hree";
+            return arrayExpr->String() + "[" + itemIndex->String() + "]";
+        }
+
+        void expressionNode() override {
+        }
+    };
+
     class functionLiteral : public expression {
     public:
         token *tok;

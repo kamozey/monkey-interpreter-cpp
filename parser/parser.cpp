@@ -96,6 +96,7 @@ astNs::expression *parser::parse_expression(precedence precdnc) {
         nextToken = tokens[index];
     }
     if (tokens[index]->type == tokenType::semicolon) index++;
+    prevExpr = left_expr;
     return left_expr;
 }
 
@@ -128,6 +129,7 @@ void parser::perform_function_registrations() {
     infixParseFns[tokenType::gt] = &parser::parse_infix_expression;
     infixParseFns[tokenType::gte] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lparen] = &parser::parse_call_expression;
+    infixParseFns[tokenType::lbracket] = &parser::parse_array_expression;
 }
 
 astNs::expression *parser::parse_identifier() {
@@ -163,6 +165,7 @@ void parser::setup_precedences_table() {
     precedences[tokenType::division] = precedence::product;
     precedences[tokenType::asterisk] = precedence::product;
     precedences[tokenType::lparen] = precedence::call;
+    precedences[tokenType::lbracket] = precedence::call;
 }
 
 precedence parser::get_precedence(tokenType t) {
@@ -269,6 +272,19 @@ astNs::expression *parser::parse_string_literal(){
 
 astNs::expression *parser::parse_array_expression(){
     expectToken(tokenType::lbracket);
+    astNs::arrayAccessExpr *arrayAccessExpr;
+
+    if(  validArrayAccessTok(tokens[index-1] ) ){
+        arrayAccessExpr = new astNs::arrayAccessExpr(prevExpr);
+        arrayAccessExpr->tok = tokens[index++]; //assign lbracket to tok and step over it
+
+        astNs::expression *accessIdx = parse_expression(precedence::lowest);
+        expectToken(tokenType::rbracket);
+        index++; // step over rbracket
+        arrayAccessExpr->itemIndex = accessIdx;
+        return arrayAccessExpr;
+    }
+
     astNs::arrayExpression *arrayExpr = new astNs::arrayExpression(tokens[index]);
     index++; // step over lbracket
     vector<astNs::expression *> items;
@@ -277,7 +293,7 @@ astNs::expression *parser::parse_array_expression(){
         if(tok->type == tokenType::eof || tok->type == tokenType::rbracket){
             index++; // step over eof || rbracket
             break;
-        }
+        } 
         if(tok->type == tokenType::comma){
             index++; // step over comma
             continue;
@@ -287,4 +303,19 @@ astNs::expression *parser::parse_array_expression(){
     }
     arrayExpr->items = items;
     return arrayExpr;
+}
+
+bool parser::validArrayAccessTok(token *tok){
+    switch (tok->type)
+    {
+        case tokenType::identifier: // ident[expr]
+            return true;
+        case tokenType::stringToken: // string[expr]
+            return true;
+        case tokenType::rbracket: // [...][expr]
+            return true;
+        case tokenType::rbrace: // fn(...){[...]}[expr]
+            return true;
+    }
+    return false;
 }
