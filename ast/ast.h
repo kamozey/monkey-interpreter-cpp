@@ -343,7 +343,6 @@ namespace astNs {
         }
 
         string String() override {
-            return "hree";
             return arrayExpr->String() + "[" + itemIndex->String() + "]";
         }
 
