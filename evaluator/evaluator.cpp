@@ -123,6 +123,11 @@ object *eval(astNs::astNode *node, Environment* env)
         return evaluateArrayExpressions(arrayExpr, env);
     }
 
+    astNs::arrayAccessExpr *arrayAccessExpr = dynamic_cast<astNs::arrayAccessExpr *>(node);
+    if (arrayAccessExpr != nullptr){
+        return evaluateArrayAccessExpression(arrayAccessExpr, env);
+    }
+
     return null;
 }
 
@@ -368,4 +373,21 @@ object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment 
         items.push_back(obj);
     }
     return new Array(items);
+}
+
+object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr,Environment *env){
+    object *obj = eval(arrayAccessExpr->arrayExpr, env);
+    if(obj->getType() != array_obj){
+        return newError("invalid array access operation. expected Array but got %s", obj->getTypeString());
+    }
+    Array *array = dynamic_cast<Array *>(obj);
+    obj = eval(arrayAccessExpr->itemIndex, env);
+    if(obj->getType() != integer_obj){
+        return newError("invalid expression inside []. expected Integer but got %s", obj->getTypeString());
+    }
+    Integer *idx = dynamic_cast<Integer *>(obj);
+    if(idx->value >= array->items.size()){
+        return newError("array index out of bounds. max size = %d, received %d", array->items.size(), idx->value);
+    }
+    return array->items[idx->value];
 }

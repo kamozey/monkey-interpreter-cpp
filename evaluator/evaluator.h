@@ -51,4 +51,6 @@ object *unwrapReturnValue(object* obj);
 
 object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment *env);
 
+object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr, Environment *env);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H
