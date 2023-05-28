@@ -115,6 +115,7 @@ void parser::perform_function_registrations() {
     prefixParseFns[tokenType::fn] = &parser::parse_function_expression;
     prefixParseFns[tokenType::booleanToken] = &parser::parse_boolean_expression;
     prefixParseFns[tokenType::stringToken] = &parser::parse_string_literal;
+    prefixParseFns[tokenType::lbracket] = &parser::parse_array_expression;
 
     infixParseFns[tokenType::plus] = &parser::parse_infix_expression;
     infixParseFns[tokenType::minus] = &parser::parse_infix_expression;
@@ -127,6 +128,7 @@ void parser::perform_function_registrations() {
     infixParseFns[tokenType::gt] = &parser::parse_infix_expression;
     infixParseFns[tokenType::gte] = &parser::parse_infix_expression;
     infixParseFns[tokenType::lparen] = &parser::parse_call_expression;
+    infixParseFns[tokenType::lbracket] = &parser::parse_array_access_expression;
 }
 
 astNs::expression *parser::parse_identifier() {
@@ -162,6 +164,7 @@ void parser::setup_precedences_table() {
     precedences[tokenType::division] = precedence::product;
     precedences[tokenType::asterisk] = precedence::product;
     precedences[tokenType::lparen] = precedence::call;
+    precedences[tokenType::lbracket] = precedence::call;
 }
 
 precedence parser::get_precedence(tokenType t) {
@@ -264,4 +267,61 @@ astNs::expression *parser::parse_string_literal(){
     token *tok = tokens[index++];
     astNs::expression *expr = new astNs::stringLiteral(tok, tok->value);
     return expr;
+}
+
+astNs::expression *parser::parse_array_expression(){
+    expectToken(tokenType::lbracket);
+    astNs::arrayExpression *arrayExpr = new astNs::arrayExpression(tokens[index]);
+    index++; // step over lbracket
+    vector<astNs::expression *> items;
+    while(index < tokens.size() ){
+        token *tok = tokens[index];
+        if(tok->type == tokenType::eof || tok->type == tokenType::rbracket){
+            index++; // step over eof || rbracket
+            break;
+        }
+        if(tok->type == tokenType::comma){
+            index++; // step over comma
+            continue;
+        }
+        astNs::expression *expr = parse_expression(precedence::lowest);
+        items.push_back(expr);
+    }
+    arrayExpr->items = items;
+    return arrayExpr;
+}
+
+bool parser::validArrayAccessTok(token *tok){
+    switch (tok->type)
+    {
+        case tokenType::identifier: // ident[expr]
+            return true;
+        case tokenType::stringToken: // string[expr]
+            return true;
+        case tokenType::rbracket: // [...][expr]
+            return true;
+        case tokenType::rbrace: // fn(...){[...]}[expr]
+            return true;
+    }
+    return false;
+}
+
+astNs::expression *parser::parse_array_access_expression(astNs::expression *leftExpr){
+    expectToken(tokenType::lbracket);
+    astNs::arrayAccessExpr *arrayAccessExpr;
+    // current token is lbracket - check if previous token is a valid array access token
+    if (validArrayAccessTok(tokens[index - 1]))
+    {
+        arrayAccessExpr = new astNs::arrayAccessExpr(leftExpr);
+        arrayAccessExpr->tok = tokens[index++]; // assign lbracket to tok and step over it
+
+        astNs::expression *accessIdx = parse_expression(precedence::lowest);
+        expectToken(tokenType::rbracket);
+        index++; // step over rbracket
+        arrayAccessExpr->itemIndex = accessIdx;
+        return arrayAccessExpr;
+    }
+    throw std::runtime_error(
+        "expected a valid array access token but got " +
+        token::token_type_string(tokens[index-1]->type));
 }

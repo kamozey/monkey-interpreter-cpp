@@ -298,6 +298,58 @@ namespace astNs {
         }
     };
 
+    class arrayExpression : public expression {
+    public:
+        token *tok;
+        vector<expression *> items;
+
+        arrayExpression(token *tok) {
+            this->tok = tok;
+            this->items = items;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s;
+            s += "[";
+            for (int i = 0; i < items.size(); i++) {
+                s += items[i]->String();
+                s += i != items.size() - 1 ? "," : "";
+            }
+            s += "]";
+            return s;
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
+    class arrayAccessExpr: public expression {
+    public:
+        token *tok;
+        expression *itemIndex; // any expression that evaluates to Integer
+        expression *arrayExpr; // any expression that evaluates to Array
+
+        arrayAccessExpr(expression *arrayExpr) {
+            this->arrayExpr = arrayExpr;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            return arrayExpr->String() + "[" + itemIndex->String() + "]";
+        }
+
+        void expressionNode() override {
+        }
+    };
+
     class functionLiteral : public expression {
     public:
         token *tok;

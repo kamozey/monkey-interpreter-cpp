@@ -95,6 +95,10 @@ token *lexer::tokenize_string(const std::string &cur, bool requesting_peek_token
     } else if(cur == "\""){
         string value  = readString(requesting_peek_token);
         return newToken(value, tokenType::stringToken);
+    } else if(cur == "["){
+        return newToken(cur, tokenType::lbracket);
+    } else if(cur == "]"){
+        return newToken(cur, tokenType::rbracket);
     }
 
     // TODO: instead of returning :identifier as default, think how to handle :illegal token case
@@ -169,7 +173,13 @@ string lexer::scanNext(bool peek) {
     } else if(cur == '"'){
         value += cur;
         // index = curIndex; // not incrementing index here because readString() will handle it
-    }
+    } else if(cur == '['){
+        value += cur;
+        curIndex++;
+    } else if(cur == ']'){
+        value += cur;
+        curIndex++;
+    } 
     if (!peek) index = curIndex;
     return value;
 }
