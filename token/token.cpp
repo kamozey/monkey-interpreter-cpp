@@ -91,5 +91,7 @@ string token::token_type_string(tokenType t) {
             return "lbracket";
         case tokenType::rbracket:
             return "rbracket";
+        case tokenType::colon:
+            return "colon";
     }
 }

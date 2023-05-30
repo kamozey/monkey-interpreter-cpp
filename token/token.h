@@ -42,7 +42,8 @@ enum tokenType {
     booleanToken,
     stringToken,
     lbracket,
-    rbracket
+    rbracket,
+    colon
 };
 
 class token {

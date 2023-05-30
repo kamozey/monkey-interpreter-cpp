@@ -99,6 +99,8 @@ token *lexer::tokenize_string(const std::string &cur, bool requesting_peek_token
         return newToken(cur, tokenType::lbracket);
     } else if(cur == "]"){
         return newToken(cur, tokenType::rbracket);
+    } else if(cur == ":"){
+        return newToken(cur, tokenType::colon);
     }
 
     // TODO: instead of returning :identifier as default, think how to handle :illegal token case
@@ -179,7 +181,10 @@ string lexer::scanNext(bool peek) {
     } else if(cur == ']'){
         value += cur;
         curIndex++;
-    } 
+    } else if(cur == ':'){
+        value += cur;
+        curIndex++;
+    }
     if (!peek) index = curIndex;
     return value;
 }
