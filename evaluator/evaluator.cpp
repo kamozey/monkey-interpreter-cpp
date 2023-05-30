@@ -128,6 +128,11 @@ object *eval(astNs::astNode *node, Environment* env)
         return evaluateArrayAccessExpression(arrayAccessExpr, env);
     }
 
+    astNs::hashLiteral *hashLiteral = dynamic_cast<astNs::hashLiteral *>(node);
+    if(hashLiteral != nullptr){
+        return evaluateHashLiteral(hashLiteral, env);
+    }
+
     return null;
 }
 
@@ -390,4 +395,21 @@ object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr,En
         return newError("array index out of bounds. max size = %d, received %d", array->items.size(), idx->value);
     }
     return array->items[idx->value];
+}
+
+object *evaluateHashLiteral(astNs::hashLiteral *hashLiteral, Environment *env){
+    Hash *hash = new Hash();
+    map<uint64_t, HashPair> map;
+    std::map<astNs::expression*, astNs::expression*>::iterator it;
+    for(it = hashLiteral->items.begin(); it!= hashLiteral->items.end(); it++){
+        object *key = eval(it->first, env);
+        object *val = eval(it->second, env);
+        HashKey hkey = hashKey(key);
+        HashPair hpair;
+        hpair.key = key;
+        hpair.value = val;
+        map[hkey.value] = hpair;
+    }
+    hash->pairs = map;
+    return hash;
 }

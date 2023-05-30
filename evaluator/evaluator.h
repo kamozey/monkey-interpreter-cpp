@@ -53,4 +53,6 @@ object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment 
 
 object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr, Environment *env);
 
+object *evaluateHashLiteral(astNs::hashLiteral *hashLiteral, Environment *env);
+
 #endif //MONKEYINTERPRETER_EVALUATOR_H
