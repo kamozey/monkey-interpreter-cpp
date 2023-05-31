@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <map>
 #include "../token/token.h"
 
 namespace astNs {
@@ -305,7 +306,6 @@ namespace astNs {
 
         arrayExpression(token *tok) {
             this->tok = tok;
-            this->items = items;
         }
 
         string tokenLiteral() override {
@@ -328,13 +328,45 @@ namespace astNs {
         }
     };
 
-    class arrayAccessExpr: public expression {
+    class hashLiteral : public expression {
+    public:
+        token *tok;
+        map<expression*, expression*> items;
+
+        hashLiteral(token *tok) {
+            this->tok = tok;
+        }
+
+        string tokenLiteral() override {
+            return tok->token_literal();
+        }
+
+        string String() override {
+            string s;
+            s += "{";
+            int cnt = items.size();
+            std::map<expression*, expression*>::iterator it;
+            for (it=items.begin(); it != items.end(); it++) {
+                cnt--;
+                s += it->first->String() + " : " + it->second->String();
+                s += cnt == 0? "" : ",";
+            }
+            s += "}";
+            return s;
+        }
+
+        void expressionNode() override {
+
+        }
+    };
+
+    class elementAccessExpr: public expression {
     public:
         token *tok;
         expression *itemIndex; // any expression that evaluates to Integer
         expression *arrayExpr; // any expression that evaluates to Array
 
-        arrayAccessExpr(expression *arrayExpr) {
+        elementAccessExpr(expression *arrayExpr) {
             this->arrayExpr = arrayExpr;
         }
 

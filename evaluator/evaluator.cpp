@@ -123,9 +123,14 @@ object *eval(astNs::astNode *node, Environment* env)
         return evaluateArrayExpressions(arrayExpr, env);
     }
 
-    astNs::arrayAccessExpr *arrayAccessExpr = dynamic_cast<astNs::arrayAccessExpr *>(node);
-    if (arrayAccessExpr != nullptr){
-        return evaluateArrayAccessExpression(arrayAccessExpr, env);
+    astNs::elementAccessExpr *elementAccessExpr = dynamic_cast<astNs::elementAccessExpr *>(node);
+    if (elementAccessExpr != nullptr){
+        return evaluateElementAccessExpression(elementAccessExpr, env);
+    }
+
+    astNs::hashLiteral *hashLiteral = dynamic_cast<astNs::hashLiteral *>(node);
+    if(hashLiteral != nullptr){
+        return evaluateHashLiteral(hashLiteral, env);
     }
 
     return null;
@@ -375,19 +380,66 @@ object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment 
     return new Array(items);
 }
 
-object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr,Environment *env){
-    object *obj = eval(arrayAccessExpr->arrayExpr, env);
-    if(obj->getType() != array_obj){
-        return newError("invalid array access operation. expected Array but got %s", obj->getTypeString());
+object *evaluateElementAccessExpression(astNs::elementAccessExpr *elementAccessExpr,Environment *env){
+    object *obj = eval(elementAccessExpr->arrayExpr, env);
+    if(obj->getType() != array_obj && obj->getType() != hash_obj){
+        return newError("invalid element access operation. expected Array or Hash but got %s", obj->getTypeString());
     }
-    Array *array = dynamic_cast<Array *>(obj);
-    obj = eval(arrayAccessExpr->itemIndex, env);
-    if(obj->getType() != integer_obj){
-        return newError("invalid expression inside []. expected Integer but got %s", obj->getTypeString());
+    if(obj->getType() == array_obj){
+        Array *array = dynamic_cast<Array *>(obj);
+        obj = eval(elementAccessExpr->itemIndex, env);
+        if(obj->getType() != integer_obj){
+            return newError("invalid expression inside []. expected Integer but got %s", obj->getTypeString());
+        }
+        Integer *idx = dynamic_cast<Integer *>(obj);
+        if(idx->value >= array->items.size()){
+            return newError("array index out of bounds. max size = %d, received %d", array->items.size(), idx->value);
+        }
+        return array->items[idx->value];
     }
-    Integer *idx = dynamic_cast<Integer *>(obj);
-    if(idx->value >= array->items.size()){
-        return newError("array index out of bounds. max size = %d, received %d", array->items.size(), idx->value);
+    if(obj->getType() == hash_obj){
+        Hash *hash = dynamic_cast<Hash *>(obj);
+        obj = eval(elementAccessExpr->itemIndex, env);
+        // currently only hash[int], hash[string], hash[boolean] are valid
+        if(obj->getType() != integer_obj && obj->getType() != string_obj && obj->getType() != boolean_obj){
+            return newError("invalid expression inside []. expected one of Integer, String, Boolean but got %s", obj->getTypeString());
+        }
+        uint64_t key = -1;
+        if(obj->getType() == integer_obj){
+            Integer *idx = dynamic_cast<Integer *>(obj);
+            key = idx->value;
+        }
+
+        if(obj->getType() == string_obj){
+            String *st = dynamic_cast<String *>(obj);
+            key = HashKey::hash(st->value.c_str());
+        }
+
+        if(obj->getType() == boolean_obj){
+            Boolean *b = dynamic_cast<Boolean*>(obj);
+            key =  b->value;
+        }
+
+        if(hash->pairs.find(key) == hash->pairs.end()){
+            return null;
+        }
+        return hash->pairs.at(key).value;
     }
-    return array->items[idx->value];
+}
+
+object *evaluateHashLiteral(astNs::hashLiteral *hashLiteral, Environment *env){
+    Hash *hash = new Hash();
+    map<uint64_t, HashPair> map;
+    std::map<astNs::expression*, astNs::expression*>::iterator it;
+    for(it = hashLiteral->items.begin(); it!= hashLiteral->items.end(); it++){
+        object *key = eval(it->first, env);
+        object *val = eval(it->second, env);
+        HashKey hkey = hashKey(key);
+        HashPair hpair;
+        hpair.key = key;
+        hpair.value = val;
+        map[hkey.value] = hpair;
+    }
+    hash->pairs = map;
+    return hash;
 }

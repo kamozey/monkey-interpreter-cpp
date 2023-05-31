@@ -81,9 +81,11 @@ public:
 
     astNs::expression *parse_array_expression();
 
+    astNs::expression *parse_hash_literal();
+
     astNs::expression *parse_array_access_expression(astNs::expression *leftExpr);
 
-    bool validArrayAccessTok(token *tok);
+    bool validElementAccessTok(token *tok);
 };
 
 #endif // MONKEYINTERPRETER_PARSER_H

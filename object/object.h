@@ -19,7 +19,9 @@ enum objectType
     error_obj,
     function_obj,
     string_obj,
-    array_obj
+    array_obj,
+    hash_obj,
+    hash_pair_obj
 };
 
 class object
@@ -281,6 +283,104 @@ public:
     std::string getTypeString() override
     {
         return "Function";
+    }
+};
+
+struct HashKey {
+    objectType type;
+    uint64_t value;
+
+    // taken from https://github.com/SRombauts/cpp-algorithms/blob/master/src/algo/hash.cpp
+    static uint64_t hash(const char* apStr) {
+        uint64_t hash = 14695981039346656037ULL; // 64 bit offset_basis = 14695981039346656037
+
+        for (uint32_t idx = 0; apStr[idx] != 0; ++idx) {
+            // 64 bit FNV_prime = 240 + 28 + 0xb3 = 1099511628211
+            hash = 1099511628211ULL * (hash ^ static_cast<unsigned char>(apStr[idx]));
+        }
+        return hash;
+    }
+};
+
+HashKey hashKey(object *obj){
+    HashKey h;
+    h.type = obj->getType();
+    switch (obj->getType())
+    {
+        case boolean_obj:{
+            Boolean *b = dynamic_cast<Boolean*>(obj);
+            h.value = b->value ? 1 : 0;
+            break;
+        }
+
+        case integer_obj:{
+            Integer *i = dynamic_cast<Integer*>(obj);
+            h.value = i->value;
+            break;
+        }
+
+        case string_obj:{
+            String *s = dynamic_cast<String*>(obj);
+            h.value = HashKey::hash(s->value.c_str());
+            break;
+        }
+
+        default:
+            break;
+    }
+    return h;
+}
+
+struct HashPair: object{
+    object *key;
+    object *value;
+
+    std::string inspect() {
+        std::string s;
+        s += value->inspect();
+        return s;
+    }
+
+    objectType getType() {
+        return hash_pair_obj;
+    }
+
+    std::string getTypeString() {
+        return "Hash_pair";
+    }
+
+};
+
+class Hash : public object
+{
+public:
+    std::map<uint64_t, HashPair> pairs;
+
+    Hash(){}
+
+    std::string inspect() override
+    {
+        string s;
+        s += "{";
+        int cnt = pairs.size();
+        std::map<uint64_t, HashPair>::iterator it;
+        for (it=pairs.begin(); it != pairs.end(); it++) {
+            cnt--;
+            s += it->second.key->inspect() + " : " + it->second.value->inspect();
+            s += cnt == 0? "" : ",";
+        }
+        s += "}";
+        return s;
+    }
+
+    objectType getType() override
+    {
+        return hash_obj;
+    }
+
+    std::string getTypeString() override
+    {
+        return "Hash";
     }
 };
 
