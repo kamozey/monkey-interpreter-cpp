@@ -20,7 +20,8 @@ enum objectType
     function_obj,
     string_obj,
     array_obj,
-    hash_obj
+    hash_obj,
+    hash_pair_obj
 };
 
 class object
@@ -330,9 +331,24 @@ HashKey hashKey(object *obj){
     return h;
 }
 
-struct HashPair{
+struct HashPair: object{
     object *key;
     object *value;
+
+    std::string inspect() {
+        std::string s;
+        s += value->inspect();
+        return s;
+    }
+
+    objectType getType() {
+        return hash_pair_obj;
+    }
+
+    std::string getTypeString() {
+        return "Hash_pair";
+    }
+
 };
 
 class Hash : public object

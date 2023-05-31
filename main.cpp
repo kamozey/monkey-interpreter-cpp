@@ -33,7 +33,7 @@ int main() {
     code = "let f = fn(x) { fn(y) { x+y }; }; let m = f(999); m(1)";
     code = R"(let x = "hello"; return x + " " + x; )";
     code = R"(let array = ["hello", 1, fn(x){ return x;}]; array[2](7);  )";
-    code = R"(let x = { "hello" : "world" }; )";
+    code = R"(let x = { "hello" : "world" }; x["hello"]; )";
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);

@@ -382,19 +382,49 @@ object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment 
 
 object *evaluateElementAccessExpression(astNs::elementAccessExpr *elementAccessExpr,Environment *env){
     object *obj = eval(elementAccessExpr->arrayExpr, env);
-    if(obj->getType() != array_obj){
-        return newError("invalid array access operation. expected Array but got %s", obj->getTypeString());
+    if(obj->getType() != array_obj && obj->getType() != hash_obj){
+        return newError("invalid element access operation. expected Array or Hash but got %s", obj->getTypeString());
     }
-    Array *array = dynamic_cast<Array *>(obj);
-    obj = eval(elementAccessExpr->itemIndex, env);
-    if(obj->getType() != integer_obj){
-        return newError("invalid expression inside []. expected Integer but got %s", obj->getTypeString());
+    if(obj->getType() == array_obj){
+        Array *array = dynamic_cast<Array *>(obj);
+        obj = eval(elementAccessExpr->itemIndex, env);
+        if(obj->getType() != integer_obj){
+            return newError("invalid expression inside []. expected Integer but got %s", obj->getTypeString());
+        }
+        Integer *idx = dynamic_cast<Integer *>(obj);
+        if(idx->value >= array->items.size()){
+            return newError("array index out of bounds. max size = %d, received %d", array->items.size(), idx->value);
+        }
+        return array->items[idx->value];
     }
-    Integer *idx = dynamic_cast<Integer *>(obj);
-    if(idx->value >= array->items.size()){
-        return newError("array index out of bounds. max size = %d, received %d", array->items.size(), idx->value);
+    if(obj->getType() == hash_obj){
+        Hash *hash = dynamic_cast<Hash *>(obj);
+        obj = eval(elementAccessExpr->itemIndex, env);
+        // currently only hash[int], hash[string], hash[boolean] are valid
+        if(obj->getType() != integer_obj && obj->getType() != string_obj && obj->getType() != boolean_obj){
+            return newError("invalid expression inside []. expected one of Integer, String, Boolean but got %s", obj->getTypeString());
+        }
+        uint64_t key = -1;
+        if(obj->getType() == integer_obj){
+            Integer *idx = dynamic_cast<Integer *>(obj);
+            key = idx->value;
+        }
+
+        if(obj->getType() == string_obj){
+            String *st = dynamic_cast<String *>(obj);
+            key = HashKey::hash(st->value.c_str());
+        }
+
+        if(obj->getType() == boolean_obj){
+            Boolean *b = dynamic_cast<Boolean*>(obj);
+            key =  b->value;
+        }
+
+        if(hash->pairs.find(key) == hash->pairs.end()){
+            return null;
+        }
+        return hash->pairs.at(key).value;
     }
-    return array->items[idx->value];
 }
 
 object *evaluateHashLiteral(astNs::hashLiteral *hashLiteral, Environment *env){
