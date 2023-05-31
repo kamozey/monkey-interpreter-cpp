@@ -360,13 +360,13 @@ namespace astNs {
         }
     };
 
-    class arrayAccessExpr: public expression {
+    class elementAccessExpr: public expression {
     public:
         token *tok;
         expression *itemIndex; // any expression that evaluates to Integer
         expression *arrayExpr; // any expression that evaluates to Array
 
-        arrayAccessExpr(expression *arrayExpr) {
+        elementAccessExpr(expression *arrayExpr) {
             this->arrayExpr = arrayExpr;
         }
 

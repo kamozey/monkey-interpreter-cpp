@@ -292,7 +292,7 @@ astNs::expression *parser::parse_array_expression(){
     return arrayExpr;
 }
 
-bool parser::validArrayAccessTok(token *tok){
+bool parser::validElementAccessTok(token *tok){
     switch (tok->type)
     {
         case tokenType::identifier: // ident[expr]
@@ -309,18 +309,18 @@ bool parser::validArrayAccessTok(token *tok){
 
 astNs::expression *parser::parse_array_access_expression(astNs::expression *leftExpr){
     expectToken(tokenType::lbracket);
-    astNs::arrayAccessExpr *arrayAccessExpr;
+    astNs::elementAccessExpr *elementAccessExpr;
     // current token is lbracket - check if previous token is a valid array access token
-    if (validArrayAccessTok(tokens[index - 1]))
+    if (validElementAccessTok(tokens[index - 1]))
     {
-        arrayAccessExpr = new astNs::arrayAccessExpr(leftExpr);
-        arrayAccessExpr->tok = tokens[index++]; // assign lbracket to tok and step over it
+        elementAccessExpr = new astNs::elementAccessExpr(leftExpr);
+        elementAccessExpr->tok = tokens[index++]; // assign lbracket to tok and step over it
 
         astNs::expression *accessIdx = parse_expression(precedence::lowest);
         expectToken(tokenType::rbracket);
         index++; // step over rbracket
-        arrayAccessExpr->itemIndex = accessIdx;
-        return arrayAccessExpr;
+        elementAccessExpr->itemIndex = accessIdx;
+        return elementAccessExpr;
     }
     throw std::runtime_error(
         "expected a valid array access token but got " +

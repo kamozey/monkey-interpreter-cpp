@@ -123,9 +123,9 @@ object *eval(astNs::astNode *node, Environment* env)
         return evaluateArrayExpressions(arrayExpr, env);
     }
 
-    astNs::arrayAccessExpr *arrayAccessExpr = dynamic_cast<astNs::arrayAccessExpr *>(node);
-    if (arrayAccessExpr != nullptr){
-        return evaluateArrayAccessExpression(arrayAccessExpr, env);
+    astNs::elementAccessExpr *elementAccessExpr = dynamic_cast<astNs::elementAccessExpr *>(node);
+    if (elementAccessExpr != nullptr){
+        return evaluateElementAccessExpression(elementAccessExpr, env);
     }
 
     astNs::hashLiteral *hashLiteral = dynamic_cast<astNs::hashLiteral *>(node);
@@ -380,13 +380,13 @@ object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment 
     return new Array(items);
 }
 
-object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr,Environment *env){
-    object *obj = eval(arrayAccessExpr->arrayExpr, env);
+object *evaluateElementAccessExpression(astNs::elementAccessExpr *elementAccessExpr,Environment *env){
+    object *obj = eval(elementAccessExpr->arrayExpr, env);
     if(obj->getType() != array_obj){
         return newError("invalid array access operation. expected Array but got %s", obj->getTypeString());
     }
     Array *array = dynamic_cast<Array *>(obj);
-    obj = eval(arrayAccessExpr->itemIndex, env);
+    obj = eval(elementAccessExpr->itemIndex, env);
     if(obj->getType() != integer_obj){
         return newError("invalid expression inside []. expected Integer but got %s", obj->getTypeString());
     }

@@ -51,7 +51,7 @@ object *unwrapReturnValue(object* obj);
 
 object *evaluateArrayExpressions(astNs::arrayExpression *arrayExpr, Environment *env);
 
-object *evaluateArrayAccessExpression(astNs::arrayAccessExpr *arrayAccessExpr, Environment *env);
+object *evaluateElementAccessExpression(astNs::elementAccessExpr *elementAccessExpr, Environment *env);
 
 object *evaluateHashLiteral(astNs::hashLiteral *hashLiteral, Environment *env);
 
