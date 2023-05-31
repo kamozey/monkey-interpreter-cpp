@@ -29,11 +29,11 @@ int main() {
     return 9+x;
     let z = if(1+1==2){return 1;} else { return true;}
     let f = fn(x,y,z){return x+y+z;}
-    let value = add(z,f);)";
-    code = "let f = fn(x) { fn(y) { x+y }; }; let m = f(999); m(1)";
-    code = R"(let x = "hello"; return x + " " + x; )";
-    code = R"(let array = ["hello", 1, fn(x){ return x;}]; array[2](7);  )";
-    code = R"(let x = { "hello" : "world" }; x["hello"]; )";
+    let value = add(z,f);
+    let f = fn(x) { fn(y) { x+y }; }; let m = f(999); m(1)
+    let x = "hello"; return x + " " + x; 
+    let array = ["hello", 1, fn(x){ return x;}]; array[2](7);  
+    let x = { "hello" : "world" }; x["hello"];)"; 
 
     printf("\n --- start tokenizing --- ");
     lexer lex = *new lexer(code);
